@@ -25,6 +25,55 @@ use Yii;
  */
 class Products extends \yii\db\ActiveRecord
 {
+    public function fields()
+    {
+        $parent = parent::fields();
+        if (isset($parent['name'])) {
+            unset($parent['name']);
+            $parent['nama_barang'] = function ($model) {
+                return $model->name;
+            };
+        }
+        if (isset($parent['user_id'])) {
+            unset($parent['user_id']);
+            $parent['user'] = function ($model) {
+                return $model->user->name;
+            };
+        }
+        if (isset($parent['category_id'])) {
+            unset($parent['category_id']);
+            $parent['category'] = function ($model) {
+                return $model->category->name;
+            };
+        }
+        if (isset($parent['toko_id'])) {
+            unset($parent['toko_id']);
+            $parent['toko'] = function ($model) {
+                return $model->toko->name;
+            };
+        }
+        if (isset($parent['img'])) {
+            $parent['img'] = function ($model) {
+                return $this->getImageUrl($model->img);
+            };
+        }
+        return $parent;
+    }
+    public function getImageUrl($link)
+    {
+        $link = Yii::getAlias("@web/" . $link);
+
+        // check file exists
+        if (
+            file_exists($link)
+            && !is_dir($link)
+        ) {
+            return $link;
+        }
+
+        // default image
+        return $link;
+    }
     /**
      * {@inheritdoc}
      */
