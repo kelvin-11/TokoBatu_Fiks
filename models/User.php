@@ -146,4 +146,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     {
         return Yii::$app->request->hostInfo.'/'.'TokoBatu/app/web/'.$this->img;
     }
+    public function validatePassword($password)
+    {
+        // return $this->password === md5($password);
+        return Yii::$app->security->validatePassword($password, $this->password);
+    }
 }
