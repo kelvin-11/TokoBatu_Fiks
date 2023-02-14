@@ -16,6 +16,7 @@ use Yii;
 use yii\web\UploadedFile;
 use app\components\Constant;
 use app\components\SSOToken;
+use app\models\Toko;
 use yii\web\HttpException;
 
 class UserController extends \yii\rest\ActiveController
@@ -28,7 +29,7 @@ class UserController extends \yii\rest\ActiveController
         $parent = parent::behaviors();
         $parent['authentication'] = [
             "class" => "\app\components\CustomAuth",
-            "only" => ["update-profile","logout"],
+            "only" => ["update-profile","get-toko","logout"],
         ];
 
         return $parent;
@@ -254,6 +255,7 @@ class UserController extends \yii\rest\ActiveController
     {
         $user = Yii::$app->user->id;
         $model = User::findOne($user);
+        var_dump($model);die;
         if($model == null){
             return [
                 'success' => false,
@@ -266,6 +268,31 @@ class UserController extends \yii\rest\ActiveController
         return (object) [
             "success" => true,
             "message" => "Berhasil logout",
+        ];
+    }
+    public function actionGetToko(){
+
+        $model = Yii::$app->user->id;
+        $user = User::findOne($model);
+        if(!isset($user)){
+            return [
+                "success" => false,
+                "message" => "Data Tidak DItemukan",
+                "data" => []
+            ];
+        }
+        $toko = Toko::findOne(['id_user'=>$user->id]);
+        if(!isset($toko)){
+            return [
+                "success" => false,
+                "message" => "Toko Tidak DItemukan",
+                "data" => []
+            ];
+        }
+        return [
+            "success" => true,
+            "message" => "OK",
+            "data" => $toko
         ];
     }
 }
