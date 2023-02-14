@@ -14,6 +14,34 @@ use Yii;
  */
 class Category extends \yii\db\ActiveRecord
 {
+
+    public function fields()
+    {
+        $parent = parent::fields();
+
+       
+        if (isset($parent['img'])) {
+            $parent['img'] = function ($model) {
+                return $this->getImageUrl($model->img);
+            };
+        }
+        return $parent;
+    }
+    public function getImageUrl($link)
+    {
+        $link = Yii::getAlias("@web/" . $link);
+
+        // check file exists
+        if (
+            file_exists($link)
+            && !is_dir($link)
+        ) {
+            return $link;
+        }
+
+        // default image
+        return $link;
+    }
     /**
      * {@inheritdoc}
      */
