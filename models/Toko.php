@@ -22,6 +22,20 @@ use Yii;
  */
 class Toko extends \yii\db\ActiveRecord
 {
+    public function fields()
+    {
+        $parent = parent::fields();
+        if (isset($parent['id_user'])) {
+            unset($parent['id_user']);
+            // $parent['_user_id'] = function ($model) {
+            //     return $model->user_id;
+            // };
+            $parent['created_by'] = function ($model) {
+                return $model->user->name;
+            };
+        }
+        return $parent;
+    }
     /**
      * {@inheritdoc}
      */

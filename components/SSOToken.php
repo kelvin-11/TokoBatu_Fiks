@@ -44,7 +44,7 @@ class SSOToken
         $flag = 0;
         $message = "Token tidak valid";
 
-        $token = Yii::$app->request->headers->get('Authorization');
+        $token = Yii::$app->request->headers->get('Auth');
         $token = str_replace("Bearer ", "", $token);
         $user = User::findOne(['secret_token' => $token]);
         // var_dump($user);die;
