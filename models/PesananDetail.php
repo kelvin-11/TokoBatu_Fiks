@@ -18,6 +18,19 @@ use Yii;
  */
 class PesananDetail extends \yii\db\ActiveRecord
 {
+    public function fields()
+    {
+        $parent = parent::fields();
+
+        unset($parent['pesanan_id']);
+        if (isset($parent['products_id'])) {
+            unset($parent['products_id']);
+            $parent['product'] = function ($model) {
+                return $model->products->name;
+            };
+        }
+        return $parent;
+    }
     /**
      * {@inheritdoc}
      */

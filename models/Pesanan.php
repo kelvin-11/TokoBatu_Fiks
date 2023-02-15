@@ -19,6 +19,53 @@ use Yii;
  */
 class Pesanan extends \yii\db\ActiveRecord
 {
+    public function fields()
+    {
+        $parent = parent::fields();
+        if (isset($parent['jasa_id'])) {
+            unset($parent['jasa_id']);
+            $parent['jasa'] = function ($model) {
+                // $jasa = \app\models\JasaKirim::findOne(['id'=>$model->jasa_id]);
+                // return $jasa;
+                return $model->jasa->name;
+            };
+        }
+        if (isset($parent['user_id'])) {
+            unset($parent['user_id']);
+            $parent['user'] = function ($model) {
+                return $model->user->name;
+            };
+        }
+        if (isset($parent['status_pemesanan'])) {
+            unset($parent['status_pemesanan']);
+            $parent['status_pesanan'] = function ($model) {
+                $status = $model->status_pemesanan;
+                foreach ($status as $key => $value) {
+                    # code...
+                    if($value == "pending"){
+                        return "Pending";
+                    }elseif ($value == "dikonfirmasi") {
+                        return "Di Konfirmasi";
+                    }elseif ($value == "dalam perjalanan") {
+                        return "Dalam Perjalanan";
+                    }elseif ($value == "sukses") {
+                        return "Sukses";
+                    }elseif ($value == "gagal") {
+                        return "Gagal";
+                    }
+                }
+                
+            };
+        }
+        if (!isset($parent['detail_pesanan'])) {
+            unset($parent['detail_pesanan']);
+            $parent['detail_pesanan'] = function ($model) {
+                $detail = \app\models\PesananDetail::find()->where(['pesanan_id'=>$model->id])->all();
+                return $detail;
+            };
+        }
+        return $parent;
+    }
     /**
      * {@inheritdoc}
      */
