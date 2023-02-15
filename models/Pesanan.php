@@ -27,7 +27,11 @@ class Pesanan extends \yii\db\ActiveRecord
             $parent['jasa'] = function ($model) {
                 // $jasa = \app\models\JasaKirim::findOne(['id'=>$model->jasa_id]);
                 // return $jasa;
-                return $model->jasa->name;
+                if($model->jasa_id != null){
+                    return $model->jasa->name;
+                }else{
+                    return '';
+                }
             };
         }
         if (isset($parent['user_id'])) {
