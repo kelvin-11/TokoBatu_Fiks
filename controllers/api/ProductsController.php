@@ -28,6 +28,19 @@ class ProductsController extends \yii\rest\ActiveController
                 "data" => $data
             ];
     }
+    public function actionIndexs()
+    {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $produk = $this->modelClass::find()->all();
+
+        return [
+            'success' => true,
+            'message' => 'success',
+            'products' => $produk,
+            'productsCount' => count($produk),
+        ];
+    }
 
     public function actionGetProduct($id){
         $data= $this->modelClass::find()->where(['id'=>$id])->one();
@@ -44,5 +57,36 @@ class ProductsController extends \yii\rest\ActiveController
             ];
         }
             
+    }
+    public function actionListProduk($id_kat = null)
+    {
+        $result = [];
+        try {
+            if ($id_kat != null) {
+                $modelProduk = $this->modelClass::find()->where(['category_id' => $id_kat])->all();
+                if ($modelProduk != null) {
+                    $result["success"] = true;
+                    $result["message"] = "success";
+                    $result["products"] = $modelProduk;
+                } else {
+                    $result["success"] = true;
+                    $result["message"] = "success";
+                    $result["products"] = $modelProduk;
+                }
+            } else {
+                $modelProduk = $this->modelClass::find()->all();
+                $result["success"] = true;
+                $result["message"] = "success";
+                $result["products"] = $modelProduk;
+            }
+            $result["productsCount"] = count($modelProduk);
+        } catch (\Exception $e) {
+            $result["success"] = false;
+            $result["message"] = "gagal";
+            $result["products"] = $modelProduk;
+            //$result[""] = null;
+        }
+        return $result;
+        //dd($modelProduk);
     }
 }
