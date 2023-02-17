@@ -61,7 +61,7 @@ class Products extends \yii\db\ActiveRecord
     }
     public function getImageUrl($link)
     {
-        $link = Yii::getAlias("@web/" . $link);
+        $link = Yii::getAlias("@web/upload/" . $link);
 
         // check file exists
         if (
@@ -158,6 +158,6 @@ class Products extends \yii\db\ActiveRecord
 
     public function getImage()
     {
-        return Yii::$app->request->hostInfo.'/'.'TokoBatu/app/web/'.$this->img;
+        return Yii::$app->request->hostInfo.'/'.'TokoBatu_fiks/app/web/'.$this->img;
     }
 }

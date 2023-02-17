@@ -144,7 +144,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 
     public function getImage()
     {
-        return Yii::$app->request->hostInfo.'/'.'TokoBatu/app/web/'.$this->img;
+        return Yii::$app->request->hostInfo.'/'.'TokoBatu_fiks/app/web/'.$this->img;
     }
     public function validatePassword($password)
     {
