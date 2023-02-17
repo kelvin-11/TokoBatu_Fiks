@@ -32,6 +32,14 @@ class Toko extends \yii\db\ActiveRecord
             // };
             $parent['created_by'] = function ($model) {
                 return $model->user->name;
+                substr_replace($model->no_whatsapp, '62', 0, 1);
+            };
+        }
+
+        if (isset($parent['no_whatsapp'])) {
+            unset($parent['no_whatsapp']);
+            $parent['no_whatsapp'] = function ($model) {
+               return substr_replace($model->no_whatsapp, '62', 0, 1);
             };
         }
         return $parent;

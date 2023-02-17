@@ -48,8 +48,14 @@ class Products extends \yii\db\ActiveRecord
         }
         if (isset($parent['toko_id'])) {
             unset($parent['toko_id']);
-            $parent['toko'] = function ($model) {
+            $parent['nama_toko'] = function ($model) {
                 return $model->toko->name;
+            };
+        }
+        if (!isset($parent['toko'])) {
+            unset($parent['toko']);
+            $parent['toko'] = function ($model) {
+                return \app\models\Toko::findOne(['id'=>$model->toko_id]);
             };
         }
         if (isset($parent['img'])) {
