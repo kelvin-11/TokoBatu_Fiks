@@ -29,7 +29,27 @@ class PesananDetail extends \yii\db\ActiveRecord
                 return $model->products->name;
             };
         }
+        if (!isset($parent['img'])) {
+            $parent['img'] = function ($model) {
+                return $this->getImageUrl($model->img);
+            };
+        }
         return $parent;
+    }
+    public function getImageUrl($link)
+    {
+        $link = Yii::getAlias("@web/upload/" . $link);
+
+        // check file exists
+        if (
+            file_exists($link)
+            && !is_dir($link)
+        ) {
+            return $link;
+        }
+
+        // default image
+        return $link;
     }
     /**
      * {@inheritdoc}
