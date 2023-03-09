@@ -20,7 +20,7 @@ class PesananController extends \yii\rest\ActiveController
         $parent = parent::behaviors();
         $parent['authentication'] = [
             "class" => "\app\components\CustomAuth",
-            "only" => ["create-keranjang", "updated","checkout"],
+            "only" => ["create-keranjang", "updated","checkout","get-pesanan-user"],
         ];
 
         return $parent;
@@ -30,6 +30,7 @@ class PesananController extends \yii\rest\ActiveController
         return [
             'create-keranjang' => ['POST'],
             'get-pesanan' => ['GET'],
+            'get-pesanan-user' => ['GET'],
             'remove-keranjang' => ['POST'],
             'updated' => ['POST'],
             'checkout' => ['POST'],
@@ -58,6 +59,22 @@ class PesananController extends \yii\rest\ActiveController
     public function actionGetPesanan($id)
     {
         $data = $this->modelClass::find()->where(['id' => $id])->one();
+        if (isset($data)) {
+            return [
+                "success" => true,
+                "message" => "Data Ditemukan",
+                "data" => $data
+            ];
+        } else {
+            return [
+                "success" => false,
+                "message" => "Data Tidak Ditemukan"
+            ];
+        }
+    }
+    public function actionGetPesananUser()
+    {
+        $data = $this->modelClass::find()->where(['user_id' => Yii::$app->user->identity->id])->andWhere(['status' => 0])->all();
         if (isset($data)) {
             return [
                 "success" => true,
