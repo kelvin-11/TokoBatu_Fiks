@@ -7,7 +7,7 @@ use Yii;
 class Helper
 {
     //API message via Whatsapp
-    public function Send($no_wa, $content, $img = null)
+    public static function Send($no_wa, $content, $img = null)
     {
         $curl = curl_init();
         curl_setopt_array($curl, array(

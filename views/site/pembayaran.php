@@ -39,10 +39,12 @@ use app\components\JSRegister;
                 /* You may add your own js here, this is just example */
                 // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
                 Swal.fire("Peringatan!", "Pembayaran Gagal", "error");
+                window.location = "<?= yii\helpers\Url::to(['site/pembayaran', 'id' => $pesanan->id]) ?>";
             },
             onClose: function() {
                 /* You may add your own implementation here */
                 Swal.fire("Peringatan!", "Anda Belum Menyelesaikan Pembayaran", "error");
+                window.location = "<?= yii\helpers\Url::to(['site/pembayaran', 'id' => $pesanan->id]) ?>";
             }
         });
     };

@@ -107,6 +107,7 @@ HomeAsset::register($this);
     </div>
     <?php $this->endBody() ?>
 </body>
-    <?= $this->render('ajax') ?>
+<?= $this->render('ajax') ?>
+
 </html>
 <?php $this->endPage() ?>

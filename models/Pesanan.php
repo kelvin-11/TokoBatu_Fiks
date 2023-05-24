@@ -84,7 +84,7 @@ class Pesanan extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'total_harga', 'created_at', 'updated_at','kode_unik','status','status_pemesanan'], 'required'],
+            [['user_id', 'total_harga','kode_unik','status','status_pemesanan'], 'required'],
             [['user_id', 'status', 'total_harga'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],

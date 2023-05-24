@@ -20,17 +20,17 @@ class ProductsController extends \yii\rest\ActiveController
         unset($actions['delete']);
         return $actions;
     }
-    public function actionIndex(){
-        $data= $this->modelClass::find()->all();
-            return [
-                "success" => true,
-                "message" => "Data Ditemukan",
-                "data" => $data
-            ];
+    public function actionIndex()
+    {
+        $data = $this->modelClass::find()->all();
+        return [
+            "success" => true,
+            "message" => "Data Ditemukan",
+            "data" => $data
+        ];
     }
     public function actionIndexs()
     {
-
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $produk = $this->modelClass::find()->all();
 
@@ -42,28 +42,28 @@ class ProductsController extends \yii\rest\ActiveController
         ];
     }
 
-    public function actionGetProduct($id){
-        $data= $this->modelClass::find()->where(['id'=>$id])->one();
-        if(isset($data)){
+    public function actionGetProduct($id)
+    {
+        $data = $this->modelClass::find()->where(['id' => $id])->one();
+        if (isset($data)) {
             return [
                 "success" => true,
                 "message" => "Data Ditemukan",
                 "data" => $data
             ];
-        }else{
+        } else {
             return [
                 "success" => false,
                 "message" => "Data Tidak Ditemukan"
             ];
         }
-            
     }
     public function actionListProduk($id_kat = null)
     {
         $result = [];
         try {
             if ($id_kat != null) {
-                $modelProduk = $this->modelClass::find()->where(['category_id' => $id_kat])->all();
+                $modelProduk = $this->modelClass::find()->where(['category_id' => $id_kat])->orderBy(['id' => SORT_DESC])->all();
                 if ($modelProduk != null) {
                     $result["success"] = true;
                     $result["message"] = "success";
@@ -74,7 +74,7 @@ class ProductsController extends \yii\rest\ActiveController
                     $result["products"] = $modelProduk;
                 }
             } else {
-                $modelProduk = $this->modelClass::find()->all();
+                $modelProduk = $this->modelClass::find()->orderBy(['id' => SORT_DESC])->all();
                 $result["success"] = true;
                 $result["message"] = "success";
                 $result["products"] = $modelProduk;
@@ -84,9 +84,30 @@ class ProductsController extends \yii\rest\ActiveController
             $result["success"] = false;
             $result["message"] = "gagal";
             $result["products"] = $modelProduk;
-            //$result[""] = null;
         }
         return $result;
-        //dd($modelProduk);
+    }
+
+    public function actionLatesProduk()
+    {
+        $result = [];
+        try {
+            $modelProduk = $this->modelClass::find()->orderBy(['id' => SORT_DESC])->limit(6)->all();
+            if ($modelProduk != null) {
+                $result["success"] = true;
+                $result["message"] = "success";
+                $result["products"] = $modelProduk;
+            } else {
+                $result["success"] = true;
+                $result["message"] = "success";
+                $result["products"] = $modelProduk;
+            }
+            $result["productsCount"] = count($modelProduk);
+        } catch (\Exception $e) {
+            $result["success"] = false;
+            $result["message"] = "gagal";
+            $result["products"] = $modelProduk;
+        }
+        return $result;
     }
 }

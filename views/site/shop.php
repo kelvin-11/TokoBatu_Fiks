@@ -9,9 +9,9 @@ use yii\helpers\Url;
             <div class="col-lg-3 col-md-5">
                 <div class="sidebar">
                     <div class="sidebar__item" id="select-category">
-                        <h4>Kategori</h4>
+                        <h4>KATEGORI</h4>
                         <ul>
-                            <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop/" ?>">Semua Kategory</a></li>
+                            <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop/" ?>">Semua Kategori</a></li>
                             <?php foreach ($categories as $category) { ?>
                                 <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop?category=" . $category->name ?>" <?php
                                                                                                                                 if (isset($_GET['category']) == $category->name) {
@@ -23,7 +23,7 @@ use yii\helpers\Url;
                     </div>
                     <div class="sidebar__item">
                         <div class="latest-product__text">
-                            <h4>Produk Terbaru</h4>
+                            <h4>TERBARU</h4>
                             <div class="latest-product__slider owl-carousel">
                                 <?php foreach ($lates as $l) { ?>
                                     <div class="latest-prdouct__slider__item">
@@ -45,69 +45,67 @@ use yii\helpers\Url;
                 </div>
             </div>
             <div class="col-lg-9 col-md-7">
-                <div class="hero__search mb-5">
-                    <div class="hero__search__form">
-                        <form action="#">
-                            <input type="text" name="search" id="search" placeholder="Apa yang kamu butuhkan?">
-                            <button class="site-btn"><i class="fa fa-search fa-lg"></i></button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- <div class="product__discount">
+                <div class="product__discount">
                     <div class="section-title product__discount__title">
-                        <h2>Sale Off</h2>
+                        <h2>DISKON</h2>
                     </div>
                     <div class="row">
                         <div class="product__discount__slider owl-carousel">
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    <div class="product__discount__item__pic set-bg" data-setbg="img/product/discount/pd-1.jpg">
-                                        <div class="product__discount__percent">-20%</div>
-                                        <ul class="product__item__pic__hover">
-                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="product__discount__item__text">
-                                        <span>Dried Fruit</span>
-                                        <h5><a href="#">Raisin’n’nuts</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
+                            <?php foreach ($diskon as $mdl) :
+                                $value = $mdl->nilai;
+                                $percentVal = round(($value / $mdl->products->harga) * 100, 2);
+                            ?>
+                                <div class="col-lg-4">
+                                    <div class="product__discount__item">
+                                        <div class="product__discount__item__pic set-bg" data-setbg="">
+                                            <img src="<?= Url::to(['/upload/' . $mdl->products->img]) ?>" alt="">
+                                            <div class="product__discount__percent"><?= $percentVal ?>%</div>
+                                            <ul class="product__item__pic__hover">
+                                                <form action="<?= Yii::$app->request->baseUrl . "/site/create-favorit" ?>" method="post" id="favorit<?= $mdl->products->id ?>">
+                                                    <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken ?>">
+                                                    <input type="hidden" name="produk_id" value="<?= $mdl->products->id ?>">
+                                                </form>
+                                                <form action="<?= Yii::$app->request->baseUrl . "/site/create-keranjang" ?>" method="post" id="keranjang<?= $mdl->products->id ?>">
+                                                    <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken ?>">
+                                                    <input type="hidden" name="produk_id" value="<?= $mdl->products->id ?>">
+                                                </form>
+                                                <li><a onclick="document.querySelector('#favorit<?= $mdl->products->id ?>').submit()"><i class="fa fa-heart"></i></a></li>
+                                                <li><a href="<?= \yii\helpers\Url::to(['/site/detail', 'id' => $mdl->products->id]) ?>"><i class="fa fa-eye"></i></a></li>
+                                                <?php if ($mdl->products->stok != null) : ?>
+                                                    <li><a onclick="document.querySelector('#keranjang<?= $mdl->products->id ?>').submit()"><i class="fa fa-shopping-cart"></i></a></li>
+                                                <?php else : ?>
+                                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                                <?php endif ?>
+                                            </ul>
+                                        </div>
+                                        <div class="product__item__text">
+                                            <h4 class="fw-bold fs-4"><?= $mdl->products->name ?></h4>
+                                            <span class="fw-light fs-6"><?= $mdl->products->category->name ?></span>
+                                            <h5 class="fw-medium py-2 mb-1">Rp. <?= number_format($mdl->products->harga - $mdl->nilai) ?></h5>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            <?php endforeach ?>
                         </div>
                     </div>
-                </div> -->
-                <!-- <div class="filter__item">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-5">
-                            <div class="section-title product__discount__title">
-
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4">
-                            <div class="filter__found">
-
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-3">
-                            <div class="filter__option">
-
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-                <div class="row" id="template">
-                    <?php foreach ($model as $mdl) : ?>
-                        <?= $this->render('_items', ['model' => $mdl]); ?>
-                    <?php endforeach ?>
                 </div>
-                <div class="product__pagination d-flex justify-content-center">
-                    <?php echo \yii\widgets\LinkPager::widget([
-                        'pagination' => $pagination,
-                    ]); ?>
+                <div class="section-title">
+                    <h2>SEMUA PRODUK</h2>
+                </div>
+                <div class="hero__search mb-5">
+                    <div class="hero__search__form" style="border-color: green;margin-left: 125px">
+                        <form action="#">
+                            <span class="ms-3 text-success"><i class="fa fa-search fa-lg"></i></span>
+                            <input type="text" name="search" id="search" placeholder="Apa yang kamu butuhkan?">
+                        </form>
+                    </div>
+                </div>
+                <div class="row" id="template">
+                    <?php foreach ($model as $mdl) :
+                        $promo = app\models\Promo::find()->where(['products_id' => $mdl->id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+                    ?>
+                        <?= $this->render('_items', ['model' => $mdl, 'promo' => $promo]); ?>
+                    <?php endforeach ?>
                 </div>
             </div>
         </div>
@@ -115,7 +113,7 @@ use yii\helpers\Url;
 </section>
 
 <?php
-//category
+//Kategori
 $script = <<< JS
 $(document).ready(function () {
     $("#select-category").change(function() {

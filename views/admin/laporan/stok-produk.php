@@ -8,7 +8,7 @@ use yii\helpers\Url;
 
 ?>
 <div class="page-header">
-    <h4 class="page-title">Laporan</h4>
+    <h4 class="page-title">Laporan Stok Produk</h4>
     <ul class="breadcrumbs">
         <li class="nav-home">
             <a href="<?= Url::to(['index']); ?>">
@@ -25,7 +25,7 @@ use yii\helpers\Url;
             <i class="flaticon-right-arrow"></i>
         </li>
         <li class="nav-item">
-            <a href="#">Stok Semua produk</a>
+            <a href="#">Laporan Stok Produk</a>
         </li>
     </ul>
 </div>
@@ -34,18 +34,14 @@ use yii\helpers\Url;
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <div class="row">
-                    <div class="col-lg-9">
-                        <div class="card-title">Laporan Stok Semua Produk</div>
-                    </div>
-                    <div class="col-lg-3">
-                        <a href="<?= Url::to(['/admin/stok-produk']) ?>" class="btn btn-success ms-5">Semua Category</a>
-                    </div>
-                </div>
+                <div class="card-title">Laporan Stok Produk</div>
+                <!-- <div style="justify-content: space-between;display:flex">
+                    <a href="<?= Url::to(['/admin/stok-produk']) ?>" class="btn bg-success-gradient text-light ms-5">Semua Category</a>
+                </div> -->
             </div>
 
             <div class="card-body">
-                <div class="row ms-5">
+                <!-- <div class="row ms-5">
                     <div class="col-lg-10">
                         <?php
                         $form = ActiveForm::begin([
@@ -67,9 +63,9 @@ use yii\helpers\Url;
                         <?= Html::submitButton('Filter', ['class' => 'btn btn-info', 'name' => 'filter-button']) ?>
                     </div>
                     <?php ActiveForm::end();  ?>
-                </div>
+                </div> -->
                 <div class="table-responsive">
-                    <table class="table table-info text-center">
+                    <table id="basic-datatables" class="display table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th>No.</th>
@@ -77,24 +73,17 @@ use yii\helpers\Url;
                                 <th>Stok</th>
                             </tr>
                         </thead>
-                        <?php $no = 1;
-                        foreach ($produk as $laporan) { ?>
-                            <tbody>
+                        <tbody>
+                            <?php $no = 1;
+                            foreach ($produk as $laporan) { ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
                                     <td><?= $laporan->name ?></td>
                                     <td><?= $laporan->stok ?></td>
                                 </tr>
-                            </tbody>
-                        <?php } ?>
+                            <?php } ?>
+                        </tbody>
                     </table>
-                </div>
-                <div class="pagination d-flex justify-content-center mt-2">
-                    <?php echo \yii\widgets\LinkPager::widget([
-                        'pagination' => $pagination,
-                        'linkContainerOptions' => ['class' => 'page-item'],
-                        'linkOptions' => ['class' => 'page-link'],
-                    ]); ?>
                 </div>
             </div>
         </div>

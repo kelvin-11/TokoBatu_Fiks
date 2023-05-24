@@ -55,7 +55,7 @@ class Products extends \yii\db\ActiveRecord
         if (!isset($parent['toko'])) {
             unset($parent['toko']);
             $parent['toko'] = function ($model) {
-                return \app\models\Toko::findOne(['id'=>$model->toko_id]);
+                return \app\models\Toko::findOne(['id' => $model->toko_id]);
             };
         }
         if (isset($parent['img'])) {
@@ -94,9 +94,9 @@ class Products extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'category_id', 'harga', 'stok', 'deskripsi_produk','berat'], 'required'],
+            [['name', 'category_id', 'harga', 'stok', 'deskripsi_produk', 'berat'], 'required'],
             [['user_id', 'category_id', 'toko_id', 'harga', 'stok',], 'integer'],
-            [['deskripsi_produk','berat'], 'string'],
+            [['deskripsi_produk', 'berat'], 'string'],
             [['name',], 'string', 'max' => 255],
             [['berat',], 'string', 'max' => 50],
             [['img'], 'file', 'extensions' => ['jpg', 'png', 'jpeg']],
@@ -123,7 +123,7 @@ class Products extends \yii\db\ActiveRecord
             'stok' => 'Stok',
             'deskripsi_produk' => 'Deskripsi Produk',
             'berat' => 'Berat'
-            
+
         ];
     }
 
@@ -156,14 +156,24 @@ class Products extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
+   
+    public function getFavorit()
+    {
+        return $this->hasOne(Favorit::class, ['id' => 'products_id']);
+    }
+    
+    public function getPromo()
+    {
+        return $this->hasOne(Favorit::class, ['id' => 'products_id']);
+    }
 
     public function getRupiah()
     {
-        return 'Rp'.number_format($this->price,2,',','.');
+        return 'Rp' . number_format($this->price, 2, ',', '.');
     }
 
     public function getImage()
     {
-        return Yii::$app->request->hostInfo.'/'.'TokoBatu_fiks/app/web/'.$this->img;
+        return Yii::$app->request->hostInfo . '/' . 'TokoBatu/app/web/' . $this->img;
     }
 }

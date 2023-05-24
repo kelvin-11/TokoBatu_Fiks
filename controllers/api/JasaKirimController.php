@@ -20,14 +20,39 @@ class JasaKirimController extends \yii\rest\ActiveController
         unset($actions['delete']);
         return $actions;
     }
-    public function actionIndex(){
-        $data= $this->modelClass::find()->all();
-            return [
-                "success" => true,
-                "message" => "Data Ditemukan",
-                "data" => $data
-            ];
+    public function actionIndex()
+    {
+        $data = $this->modelClass::find()->all();
+        return [
+            "success" => true,
+            "message" => "Data Ditemukan",
+            "data" => $data
+        ];
     }
+    //API Jasa Kirim
+    public function actionJasa()
+    {
+        $result = [];
+        try {
+            $modelJasa = $this->modelClass::find()->all();
+            if ($modelJasa !== null) {
+                $result["success"] = true;
+                $result["message"] = "success";
+                $result["data"] = $modelJasa;
+            } else {
+                $result["success"] = true;
+                $result["message"] = "success";
+                $result["data"] = $modelJasa;
+            }
+            $result["DataCount"] = count($modelJasa);
+        } catch (\Exception $e) {
+            $result["success"] = false;
+            $result["message"] = "gagal";
+            $result["data"] = $modelJasa;
+        }
+        return $result;
+    }
+
     //API Raja Ongkir provinsi
     public function actionProvinsi()
     {
@@ -68,7 +93,7 @@ class JasaKirimController extends \yii\rest\ActiveController
     //API Raja Ongkir Kota/Kabupaten
     public function actionDistrict()
     {
-        $id_provinsi_terpilih = $_POST['id_provinsi'];
+        $id_provinsi_terpilih = $_GET['id_provinsi'];
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -106,9 +131,9 @@ class JasaKirimController extends \yii\rest\ActiveController
     //API Raja Ongkir Paket pengiriman
     public function actionPaket()
     {
-        $jasa_terpilih = $_POST["jasa"];
-        $distrik_terpilih = $_POST["district"];
-        $berat_total = $_POST["berat"];
+        $distrik_terpilih = $_GET["destination"];
+        $berat_total = $_GET["weight"];
+        $jasa_terpilih = $_GET["courier"];
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -119,7 +144,7 @@ class JasaKirimController extends \yii\rest\ActiveController
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => "origin=501&destination=" . $distrik_terpilih . "&weight=" . $berat_total . "&courier=" . $jasa_terpilih,
+            CURLOPT_POSTFIELDS => "origin=501 &destination=" . $distrik_terpilih . "&weight=" . $berat_total . "&courier=" . $jasa_terpilih,
             CURLOPT_HTTPHEADER => array(
                 "content-type: application/x-www-form-urlencoded",
                 "key: c51cd96ff8594d4cc7cbd2d0a09e737c"
@@ -135,7 +160,6 @@ class JasaKirimController extends \yii\rest\ActiveController
             echo "cURL Error #:" . $err;
         } else {
             $ongkir = json_decode($response, TRUE);
-            // var_dump($ongkir);die;
             $datapaket = $ongkir['rajaongkir']['results']['0']['costs'];
 
             $data = [

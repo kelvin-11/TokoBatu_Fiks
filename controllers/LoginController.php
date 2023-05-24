@@ -2,23 +2,22 @@
 
 namespace app\controllers;
 
-use app\models\Category;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
-use app\models\ContactForm;
-use app\models\Pesanan;
-use app\models\PesananDetail;
-use app\models\Products;
-use app\models\Toko;
 use app\models\User;
-use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
 
 class LoginController extends Controller
 {
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+        $this->layout = '@app/views/layouts-login/main';
+        return parent::beforeAction($action);
+    }
+
     public function behaviors()
     {
         return [
@@ -73,7 +72,7 @@ class LoginController extends Controller
             $model->updated_at = date('Y-m-d H:i:s');
             $model->role_id = 1;
             $model->status = $model::STATUS_ACTIVE;
-            if ($model->save()) {
+            if ($model->validate()) {
                 // $message = Yii::$app->mailer->compose();
                 // if (Yii::$app->user->isGuest) {
                 //     $message->setFrom(['kelvinrohmatsetiaji@gmail.com' => 'Gagal']);
@@ -84,8 +83,12 @@ class LoginController extends Controller
                 //     ->setSubject('Message subject')
                 //     ->setTextBody('Plain text content')
                 //     ->send();
+                $model->save();
                 Yii::$app->session->setFlash('success', 'Berhasil Register..Silahkan Login!');
                 return $this->redirect(['login']);
+            } else {
+                Yii::$app->session->setFlash('error', 'Gagal Register..!');
+                return $this->redirect(['signup']);
             }
         }
 
@@ -105,12 +108,14 @@ class LoginController extends Controller
             Yii::$app->session->setFlash('error', 'Anda telah Login');
             return $this->goHome();
         }
+        $r = Yii::$app->request->post();
 
         $model = new User();
-        if ($r = Yii::$app->request->post()) {
+        if ($r) {
             $user = User::find()->where(['email' => $r['User']['email']])->one();
             if ($user) {
-                if (Yii::$app->security->validatePassword($r['User']['password'], $user->password)) {
+                $valiadasi = Yii::$app->security->validatePassword($r['User']['password'], $user->password);
+                if ($valiadasi) {
                     Yii::$app->user->login($user);
                     if ($user->role_id != 2) {
                         Yii::$app->session->setFlash('success', 'Berhasil Login');
@@ -138,9 +143,11 @@ class LoginController extends Controller
      */
     public function actionLogout()
     {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
+        $lg =  Yii::$app->user->logout();
+        if ($lg) {
+            Yii::$app->session->setFlash('success', 'Berhasil Log-Out');
+            return $this->goHome();
+        }
     }
 
     /**

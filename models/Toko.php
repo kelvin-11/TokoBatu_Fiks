@@ -39,10 +39,38 @@ class Toko extends \yii\db\ActiveRecord
         if (isset($parent['no_whatsapp'])) {
             unset($parent['no_whatsapp']);
             $parent['no_whatsapp'] = function ($model) {
-               return substr_replace($model->no_whatsapp, '62', 0, 1);
+                return substr_replace($model->no_whatsapp, '62', 0, 1);
+            };
+        }
+
+        if (isset($parent['flag'])) {
+            $parent['flag'] = function ($model) {
+                return $this->getImageUrl($model->flag);
+            };
+        }
+        
+        if (!isset($parent['products'])) {
+            unset($parent['products']);
+            $parent['products'] = function ($model) {
+                return ProductsToko::find()->where(["toko_id"=>$model->id])->all();
             };
         }
         return $parent;
+    }
+    public function getImageUrl($link)
+    {
+        $link = Yii::getAlias("@web/upload/" . $link);
+
+        // check file exists
+        if (
+            file_exists($link)
+            && !is_dir($link)
+        ) {
+            return $link;
+        }
+
+        // default image
+        return $link;
     }
     /**
      * {@inheritdoc}

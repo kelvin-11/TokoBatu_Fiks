@@ -28,6 +28,32 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    public function fields()
+    {
+        $parent = parent::fields();
+        if (isset($parent['img'])) {
+            $parent['img'] = function ($model) {
+                return $this->getImageUrl($model->img);
+            };
+        }
+        return $parent;
+    }
+    public function getImageUrl($link)
+    {
+        $link = Yii::getAlias("@web/upload/" . $link);
+
+        // check file exists
+        if (
+            file_exists($link)
+            && !is_dir($link)
+        ) {
+            return $link;
+        }
+
+        // default image
+        return $link;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -45,7 +71,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             ],
         ];
     }
-    
+
     public static function findIdentity($id)
     {
         return static::findOne($id);
@@ -79,11 +105,11 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     {
         return [
             [['name', 'email', 'password', 'status'], 'required'],
-            [['status', 'role_id','codepos'], 'integer'],
+            [['status', 'role_id', 'codepos'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['name', 'email', 'password', 'alamat','kota','provinsi','type'], 'string', 'max' => 255],
+            [['name', 'email', 'password', 'alamat', 'kota', 'provinsi', 'type'], 'string', 'max' => 255],
             [['no_hp'], 'string', 'min' => 11, 'max' => 13],
-            [['email','name'],'unique'],
+            [['email', 'name'], 'unique'],
             [['img'], 'file', 'extensions' => ['jpg', 'png', 'jpeg']],
             [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => Role::class, 'targetAttribute' => ['role_id' => 'id']],
         ];
@@ -106,7 +132,6 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'img' => 'Image',
             'kota' => 'Kota',
             'codepos' => 'Codepos',
-            'upload' => 'Item Preview',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
@@ -141,14 +166,18 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     {
         return $this->hasMany(Toko::class, ['id_user' => 'id']);
     }
+    
+    public function getFavorit()
+    {
+        return $this->hasMany(Favorit::class, ['user_id' => 'id']);
+    }
 
     public function getImage()
     {
-        return Yii::$app->request->hostInfo.'/'.'TokoBatu_fiks/app/web/'.$this->img;
+        return Yii::$app->request->hostInfo . '/' . 'TokoBatu/app/web/' . $this->img;
     }
     public function validatePassword($password)
     {
-        // return $this->password === md5($password);
         return Yii::$app->security->validatePassword($password, $this->password);
     }
 }

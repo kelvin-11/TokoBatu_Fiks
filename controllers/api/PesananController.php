@@ -1,6 +1,7 @@
 <?php
 
 namespace app\controllers\api;
+
 use app\components\Helper;
 use app\models\PesananDetail;
 use app\models\Products;
@@ -20,7 +21,7 @@ class PesananController extends \yii\rest\ActiveController
         $parent = parent::behaviors();
         $parent['authentication'] = [
             "class" => "\app\components\CustomAuth",
-            "only" => ["create-keranjang", "updated","checkout","get-pesanan-user"],
+            "only" => ["create-keranjang", "updated", "checkout", "get-pesanan-user", 'my-order'],
         ];
 
         return $parent;
@@ -34,6 +35,7 @@ class PesananController extends \yii\rest\ActiveController
             'remove-keranjang' => ['POST'],
             'updated' => ['POST'],
             'checkout' => ['POST'],
+            'my-order' => ['GET']
         ];
     }
     public function actions()
@@ -79,7 +81,7 @@ class PesananController extends \yii\rest\ActiveController
             return [
                 "success" => true,
                 "message" => "Data Ditemukan",
-                "data" => $data
+                "data" => $data,
             ];
         } else {
             return [
@@ -88,6 +90,7 @@ class PesananController extends \yii\rest\ActiveController
             ];
         }
     }
+
     public function actionCreateKeranjang()
     {
 
@@ -216,70 +219,98 @@ class PesananController extends \yii\rest\ActiveController
         try {
             $val = Yii::$app->request->post();
 
-        $transaction = Yii::$app->db->beginTransaction();
-        $user = User::find()->where(['id' => Yii::$app->user->identity->id])->one();
-        if ($user) {
-            $user->alamat = $val['alamat'];
-            $user->kota = $val['district'];
-            $user->provinsi = $val['provinsi'];
-            $user->type = $val['type'];
-            $user->no_hp = $val['no_hp'];
-            $user->codepos = $val['codepos'];
-            $user->email = $val['email'];
-            if ($user->validate()) {
-                $user->update();
-                $transaction->commit();
-            } else {
-                return [
-                    "success" => false,
-                    "message" => "Mohon Lengkapi Data Pesanan!"
-                ];
-            }
-
-            $pesanan = $this->modelClass::find()->where(['user_id' => Yii::$app->user->identity->id])->andWhere(['status' => 0])->one();
-            $pesanan_detail = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->all();
-            if ($pesanan_detail) {
-                foreach ($pesanan_detail as $pd) {
-                    $produk = Products::find()->where(['id' => $pd->products_id])->one();
-                    $produk->stok = $produk->stok - $pd->jml;
-                    $produk->update();
-                }
-            } else {
-                return [
-                    "success" => false,
-                    "message" => "Gagal memproses data!"
-                ];
-            }
-
-            if ($pesanan) {
-                $pesanan->status = 1;
-                $pesanan->jasa_id = $val['jasa'];
-                $pesanan->status_pemesanan = 'dikonfirmasi';
-                if ($pesanan->validate()) {
-                    $pesanan->update();
-                    //return ke pembayaran Midtrans
-                    return $this->actionBayar($pesanan->id);
+            $transaction = Yii::$app->db->beginTransaction();
+            $user = User::find()->where(['id' => Yii::$app->user->identity->id])->one();
+            if ($user) {
+                $user->alamat = $val['alamat'];
+                $user->provinsi = $val['provinsi'];
+                $user->kota = $val['district'];
+                $user->type = $val['type'];
+                $user->no_hp = $val['no_hp'];
+                $user->codepos = $val['codepos'];
+                $user->email = $val['email'];
+                if ($user->validate()) {
+                    $user->update();
+                    $transaction->commit();
                 } else {
                     return [
                         "success" => false,
-                        "message" => "Mohon Pilih Metode Pengiriman!"
+                        "message" => "Mohon Lengkapi Data Pesanan!"
                     ];
                 }
-            } else {
-                return [
-                    "success" => false,
-                    "message" => "Tidak bisa memproses data"
-                ];
+
+                $pesanan = $this->modelClass::find()->where(['user_id' => Yii::$app->user->identity->id])->andWhere(['status' => 0])->one();
+                $pesanan_detail = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->all();
+                if ($pesanan_detail) {
+                    foreach ($pesanan_detail as $pd) {
+                        $produk = Products::find()->where(['id' => $pd->products_id])->one();
+                        $produk->stok = $produk->stok - $pd->jml;
+                        $produk->update();
+                    }
+                } else {
+                    return [
+                        "success" => false,
+                        "message" => "Gagal memproses data!"
+                    ];
+                }
+
+                if ($pesanan) {
+                    $pesanan->status = 1;
+                    $pesanan->jasa_id = $val['jasa'];
+                    $pesanan->status_pemesanan = 'dikonfirmasi';
+                    if ($pesanan->validate()) {
+                        $pesanan->update();
+                        //return ke pembayaran Midtrans
+                        return $this->actionBayar($pesanan->id);
+                    } else {
+                        return [
+                            "success" => false,
+                            "message" => "Mohon Pilih Metode Pengiriman!"
+                        ];
+                    }
+                } else {
+                    return [
+                        "success" => false,
+                        "message" => "Tidak bisa memproses data"
+                    ];
+                }
             }
-        }
         } catch (\Throwable $th) {
             return [
                 "success" => false,
                 "message" => "Isi data dengan benar"
             ];
         }
-        
     }
+
+    public function actionUpdatePesanan()
+    {
+        try {
+            $val = Yii::$app->request->post();
+
+            $pesanan =  $this->modelClass::find()->where(['user_id' => Yii::$app->user->identity->id])->andWhere(['status' => 0])->one();
+            if ($pesanan) {
+                $pesanan->paket = $val['paket'];
+                $pesanan->ongkir = $val['ongkir'];
+                $pesanan->estimasi = $val['estimasi'];
+                // $pesanan->total_harga += $val['ongkir'];
+                if ($pesanan->validate()) {
+                    $pesanan->update();
+                    return [
+                        "success" => true,
+                        "message" => "Berhasil Update Pesanan"
+                    ];
+                }
+            }
+        } catch (\Throwable $th) {
+            return [
+                "success" => false,
+                "message" => "Isi data dengan benar"
+            ];
+        }
+    }
+
+
     //Action Pembayaran Midtrans
     protected function actionBayar($id)
     {
@@ -339,9 +370,9 @@ class PesananController extends \yii\rest\ActiveController
         if ($model->validate()) {
             $model->save();
 
-                    //mengirim pesan ke pembeli melalui whatsapp
-                    $phone_sender = substr_replace($model->user->no_hp, '62', 0, 1);
-                    $pesan_sender = "Salam kak {$model->user->name}, ini adalah pesan otomatis dari Toko Batu.
+            //mengirim pesan ke pembeli melalui whatsapp
+            $phone_sender = substr_replace($model->user->no_hp, '62', 0, 1);
+            $pesan_sender = "Salam kak {$model->user->name}, ini adalah pesan otomatis dari Toko Batu.
 Kami ucapkan terima kasih karena telah berbelanja di toko kami. Jangan lupa untuk konfirmasi bila barang sudah diterima dan tolong bantu kami dengan memberi bintang 5..
                     
 Kirimkan Rating kepada Toko Kami setelah Pengiriman Selesai pada link diberikut.
@@ -349,10 +380,44 @@ Pemesanan Hubunggi :https://wa.me/6285708217852
                                                             
 Terimakasih telah berbelanja di Toko Batu 
 Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
-                    Helper::Send($phone_sender, $pesan_sender);
-            return ['success' => true, 'message' => 'success', 'data' => $model, 'code' => $hasil_code,'url'=>$hasil];
+            Helper::Send($phone_sender, $pesan_sender);
+            return ['success' => true, 'message' => 'success', 'data' => $model, 'code' => $hasil_code, 'url' => $hasil];
         } else {
             return ['success' => false, 'message' => 'Gagal melakukan pembayaran midtrans', 'data' => []];
+        }
+    }
+
+    public function actionMyOrder()
+    {
+        $data = $this->modelClass::find()->where(['user_id' => Yii::$app->user->identity->id])->andWhere(['status' => 1])->orderBy(['id' => SORT_DESC])->all();
+        if (isset($data)) {
+            return [
+                "success" => true,
+                "message" => "Data Ditemukan",
+                "data" => $data
+            ];
+        } else {
+            return [
+                "success" => false,
+                "message" => "Data Tidak Ditemukan"
+            ];
+        }
+    }
+    
+    public function actionDetails($id)
+    {
+        $data = $this->modelClass::find()->where(['id' => $id])->all();
+        if (isset($data)) {
+            return [
+                "success" => true,
+                "message" => "Data Ditemukan",
+                "data" => $data
+            ];
+        } else {
+            return [
+                "success" => false,
+                "message" => "Data Tidak Ditemukan"
+            ];
         }
     }
 }

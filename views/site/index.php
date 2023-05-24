@@ -1,23 +1,3 @@
-<?php
-
-use yii\helpers\Url;
-
-?>
-<?php if (Yii::$app->session->hasFlash('success')) : ?>
-    <div class="alert alert-success alert-dismissable">
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-        <p><i class="icon fa fa-check"></i>Saved!</p>
-        <?= Yii::$app->session->getFlash('success') ?>
-    </div>
-<?php endif; ?>
-<?php if (Yii::$app->session->hasFlash('error')) : ?>
-    <div class="alert alert-danger alert-dismissable">
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-        <h4><i class="icon fa fa-close"></i>Not Saved!</h4>
-        <?= Yii::$app->session->getFlash('error') ?>
-    </div>
-<?php endif; ?>
-
 <div class="site-index">
     <section class="hero">
         <div class="container">
@@ -26,7 +6,7 @@ use yii\helpers\Url;
                     <div class="hero__categories">
                         <div class="hero__categories__all">
                             <i class="fa fa-bars"></i>
-                            <span>Kategori</span>
+                            <span>KATEGORI</span>
                         </div>
                         <ul>
                             <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop/" ?>">Semua Kategori</a></li>
@@ -55,13 +35,22 @@ use yii\helpers\Url;
                             </div>
                         </div>
                     </div> -->
-                    <div class="hero__item set-bg" data-setbg="<?= \Yii::$app->request->BaseUrl . "/ogani-master/img/hero/banner.jpg" ?>">
-                        <div class="hero__text">
-                            <span>SAYUR SEGAR</span>
-                            <h2>Sayuran <br />100% Sehat</h2>
-                            <p>Penjemputan dan Pengiriman Gratis Tersedia</p>
-                            <a href="#" class="primary-btn">BELI SEKARANG</a>
+                    <div id="carouselExampleIndicators" class="carousel slide">
+                        <div class="carousel-inner">
+                            <?php foreach ($banners as $key => $banner) { ?>
+                                <div class="carousel-item <?= ($key == 0) ? "active" : "" ?>">
+                                    <img src="<?= yii\helpers\Url::to(['/upload/' . $banner->image]) ?>" alt="" style="width: 150vh;height:80vh">
+                                </div>
+                            <?php } ?>
                         </div>
+                        <?php if ($bannerCount != 1) { ?>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </button>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -91,7 +80,7 @@ use yii\helpers\Url;
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title">
-                        <h2>Produk Unggulan</h2>
+                        <h2>PRODUK UNGGULAN</h2>
                     </div>
                     <!-- <div class="featured__controls">
                         <ul>
@@ -104,9 +93,11 @@ use yii\helpers\Url;
                     </div> -->
                 </div>
             </div>
-            <div class="row featured__filter" id="index">
-                <?php foreach ($lates as $produk) : ?>
-                    <?= $this->render('_item', ['model' => $produk]); ?>
+            <div class="row featured__filter">
+                <?php foreach ($lates as $produk) :
+                    $promo = app\models\Promo::find()->where(['products_id' => $produk->id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+                ?>
+                    <?= $this->render('_item', ['model' => $produk, 'promo' => $promo]); ?>
                 <?php endforeach ?>
             </div>
         </div>
@@ -114,7 +105,7 @@ use yii\helpers\Url;
     <!-- Featured Section End -->
 
     <!-- Banner Begin -->
-    <div class="banner mb-5">
+    <!-- <div class="banner mb-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-6">
@@ -129,6 +120,6 @@ use yii\helpers\Url;
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- Banner End -->
 </div>

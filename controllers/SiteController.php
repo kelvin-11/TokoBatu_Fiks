@@ -2,16 +2,19 @@
 
 namespace app\controllers;
 
+use app\models\Banner;
 use app\models\Category;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\ContactForm;
+use app\models\Favorit;
 use app\models\JasaKirim;
 use app\models\Pesanan;
 use app\models\PesananDetail;
 use app\models\Products;
+use app\models\Promo;
 use app\models\Toko;
 use app\models\User;
 use yii\data\ActiveDataProvider;
@@ -74,33 +77,37 @@ class SiteController extends Controller
     public function actionIndex()
     {
         $categories = Category::find()->all();
-        $lates = Products::find()->limit(4)->all();
+        $lates = Products::find()->orderBy(['id' => SORT_DESC])->limit(4)->all();
+        $banners = Banner::find()->all();
+        $bannerCount = Banner::find()->count();
 
-        $items = Products::find()->with('category');
-        if (isset($_GET['Item'])) {
-            $search_args = \Yii::$app->request->get()['Item'];
-            $items->andFilterWhere([
-                'category_id' => $search_args['category_id']
-            ]);
-        }
+        // $items = Products::find()->with('category');
+        // if (isset($_GET['Item'])) {
+        //     $search_args = \Yii::$app->request->get()['Item'];
+        //     $items->andFilterWhere([
+        //         'category_id' => $search_args['category_id']
+        //     ]);
+        // }
 
-        $provider = new ActiveDataProvider([
-            'query' => $items,
-            'pagination' => [
-                'pageSize' => 4, //untuk menampilkan banyyak produk dihalaman utama
-            ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_ASC,
-                    'name' => SORT_ASC,
-                ]
-            ],
-        ]);
+        // $provider = new ActiveDataProvider([
+        //     'query' => $items,
+        //     'pagination' => [
+        //         'pageSize' => 4, //untuk menampilkan banyyak produk dihalaman utama
+        //     ],
+        //     'sort' => [
+        //         'defaultOrder' => [
+        //             'id' => SORT_ASC,
+        //             'name' => SORT_ASC,
+        //         ]
+        //     ],
+        // ]);
         return $this->render('index', [
-            'items' => $items,
-            'provider' => $provider,
+            // 'items' => $items,
+            // 'provider' => $provider,
             'categories' => $categories,
             'lates' => $lates,
+            'banners' => $banners,
+            'bannerCount' => $bannerCount,
         ]);
     }
 
@@ -110,10 +117,12 @@ class SiteController extends Controller
         if ($model->toko_id != null) {
             $toko = Toko::find()->where(['id' => $model->toko_id])->one();
             $produk = Products::find()->where(['toko_id' => $toko->id])->orderBy(['id' => SORT_DESC])->limit(4)->all();
+            $promo = Promo::find()->where(['>=', 'date_end', date('Y-m-d')])->andWhere(['products_id' => $id])->one();
 
             return $this->render('detail', [
                 'produk' => $produk,
-                'model' => $model
+                'model' => $model,
+                'promo' => $promo,
             ]);
         }
         return $this->render('detail', [
@@ -126,29 +135,20 @@ class SiteController extends Controller
         if (isset($_GET['category'])) {
             $category = $_GET['category'];
             $get_id = Category::find()->where(['name' => $category])->one();
-            $query = Products::find()->where(['category_id' => $get_id->id]);
-            $count = $query->count();
-            $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 9]);
-            $model = $query->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
+            $model = Products::find()->where(['category_id' => $get_id->id])->orderBy(['id' => SORT_DESC])->all();
         } else {
-            $query = Products::find();
-            $count = $query->count();
-            $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 9]);
-            $model = $query->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
+            $model = Products::find()->orderBy(['id' => SORT_DESC])->all();
         }
 
         $categories = Category::find()->all();
         $lates = Products::find()->orderBy(['id' => SORT_DESC])->limit(6)->all();
+        $diskon = Promo::find()->where(['>=', 'date_end', date('Y-m-d')])->orderBy(['updated_at' => SORT_DESC])->all();
 
         return $this->render('shop', [
             'model' => $model,
             'lates' => $lates,
             'categories' => $categories,
-            'pagination' => $pagination
+            'diskon' => $diskon,
         ]);
     }
 
@@ -179,7 +179,6 @@ class SiteController extends Controller
         //beginTransaction jika data tidak ke save maka akan default di hapus
         $transaction = Yii::$app->db->beginTransaction();
         $pesanan = Pesanan::find()->where(['user_id' => Yii::$app->user->identity->id])->andWhere(['status' => 0])->one();
-
         if (!$pesanan) {
             // tambah data pesanan
             $pesanan = new Pesanan();
@@ -188,16 +187,16 @@ class SiteController extends Controller
             $pesanan->kode_unik = random_int(0, 99999);
             $pesanan->total_harga = 0;
             $pesanan->status_pemesanan = 'pending';
-            $pesanan->created_at = date('y:m:d H:i:s');
-            $pesanan->updated_at = date('y:m:d H:i:s');
-            if (!$pesanan->validate()) {
-                //roleBack agar tidak jadi di save
+            if ($pesanan->validate()) {
+                $pesanan->save();
+            } else {
+                //rollBack agar tidak jadi di save jika validasi salah
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Terjadi kesalahan ketika menyimpan data.');
                 return $this->redirect('index');
             }
-            $pesanan->save();
         }
+
         // ambil data produk
         $produk = Products::findOne(['id' => $val["produk_id"]]);
         if (!$produk) {
@@ -206,9 +205,19 @@ class SiteController extends Controller
             return $this->redirect('index');
         }
 
+        //cek apakah ada promo yang masih aktif dari produk yang dipilih
+        $promo = Promo::find()->where(['products_id' => $val['produk_id']])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+        if ($promo) {
+            //jika ada harga produk dikurangi harga promo
+            $value = $produk->harga - $promo->nilai;
+        } else {
+            $value = $produk->harga;
+        }
+
         // tambah detail pesanan
         $data = PesananDetail::findOne(['pesanan_id' => $pesanan->id, 'products_id' => $produk->id]);
         if (!$data) {
+            //jika pesanan detail dengan produk id belum ada maka membuat pesanan detail baru
             $data = new PesananDetail();
             $data->products_id = $produk->id;
             $data->pesanan_id = $pesanan->id;
@@ -216,7 +225,7 @@ class SiteController extends Controller
         } else {
             $data->jml += $val['qty'] ?? 1;
         }
-        $data->total = $data->jml * $produk->harga;
+        $data->total = $data->jml * $value;
 
         if ($data->validate()) {
             $data->save();
@@ -250,7 +259,7 @@ class SiteController extends Controller
 
         return $this->render('keranjang', [
             'pesanan' => $pesanan,
-            'pesanan_detail' => $pesanan_detail
+            'pesanan_detail' => $pesanan_detail,
         ]);
     }
 
@@ -258,6 +267,7 @@ class SiteController extends Controller
     {
         $pesanan_detail = PesananDetail::findOne($id);
 
+        //cek apakah pesanan detail ada
         if ($pesanan_detail) {
             $pesanan = Pesanan::find()->where(['id' => $pesanan_detail->pesanan_id])->one();
             $jumlah_pesanan_detail = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->count();
@@ -373,9 +383,9 @@ class SiteController extends Controller
     //API Raja Ongkir Paket pengiriman
     public function actionPaket()
     {
-        $jasa_terpilih = $_POST["jasa"];
         $distrik_terpilih = $_POST["distrik"];
         $berat_total = $_POST["berat"];
+        $jasa_terpilih = $_POST["jasa"];
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -443,8 +453,9 @@ class SiteController extends Controller
 
         $val = Yii::$app->request->post();
 
-        $transaction = Yii::$app->db->beginTransaction();
+        //cek user yang melakukan checkout
         $user = User::find()->where(['id' => Yii::$app->user->identity->id])->one();
+        //jika user ada tambahkan data berikut
         if ($user) {
             $user->alamat = $val['alamat'];
             $user->kota = $val['distrik'];
@@ -455,9 +466,7 @@ class SiteController extends Controller
             $user->email = $val['email'];
             if ($user->validate()) {
                 $user->update();
-                $transaction->commit();
             } else {
-                $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Mohon Lengkapi Data Pesanan!');
                 return $this->redirect('checkout');
             }
@@ -466,8 +475,10 @@ class SiteController extends Controller
             $pesanan_detail = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->all();
             if ($pesanan_detail) {
                 foreach ($pesanan_detail as $pd) {
+                    $pd->created_at = date('Y-m-d H:i:s');
                     $produk = Products::find()->where(['id' => $pd->products_id])->one();
                     $produk->stok = $produk->stok - $pd->jml;
+                    $pd->update();
                     $produk->update();
                 }
             } else {
@@ -479,6 +490,8 @@ class SiteController extends Controller
                 $pesanan->status = 1;
                 $pesanan->jasa_id = $val['select'];
                 $pesanan->status_pemesanan = 'dikonfirmasi';
+                $pesanan->created_at = date('Y-m-d H:i:s');
+                $pesanan->updated_at = date('Y-m-d H:i:s');
                 if ($pesanan->validate()) {
                     $pesanan->update();
                     //mengirim pesan ke pembeli melalui whatsapp
@@ -495,7 +508,6 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
                     //return ke pembayaran Midtrans
                     return $this->redirect(['pembayaran-header', 'id' => $pesanan->id]);
                 } else {
-                    $transaction->rollBack();
                     Yii::$app->session->setFlash('error', 'Mohon Pilih Metode Pengiriman!');
                     return $this->redirect('checkout');
                 }
@@ -542,10 +554,19 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
         }
         $pesanan_detail = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->all();
 
+        $sumjumlah = 0;
+        $sumberat = 0;
+        foreach ($pesanan_detail as $pd) {
+            $sumjumlah += intval($pd->jml);
+            $sumberat += intval($pd->products->berat);
+        }
+        $ttl = $sumberat * $sumjumlah;
+
         return $this->render('checkout', [
             'pesanan' => $pesanan,
             'pesanan_detail' => $pesanan_detail,
             'pengiriman' => $pengiriman,
+            'ttl' => $ttl
         ]);
     }
 
@@ -606,9 +627,15 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
 
         $item1_details = array();
         foreach ($detail as $data) {
+            $promo = Promo::find()->where(['products_id' => $data->products_id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+            if ($promo) {
+                $harga = $data->products->harga - $promo->nilai;
+            } else {
+                $harga = $data->products->harga;
+            }
             $item1_details[] = array(
                 'id' => (int)$data->id,
-                'price' => (int)$data->products->harga,
+                'price' => (int)$harga,
                 'quantity' => (int)$data->jml,
                 'name' => (string)$data->products->name,
             );
@@ -668,6 +695,55 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
         ]);
     }
 
+    public function actionTokoView()
+    {
+        if (isset($_GET['toko'])) {
+            $toko = $_GET['toko'];
+            $model = Toko::find()->where(['name' => $toko])->one();
+            $query = Products::find()->where(['toko_id' => $model->id])->all();
+        }
+        return $this->render('toko-view', [
+            'model' => $model,
+            'query' => $query,
+        ]);
+    }
+
+    public function actionCreateFavorit()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('/TokoBatu/web/login/login');
+        }
+
+        $val = Yii::$app->request->post();
+
+        $produk = Products::findOne(['id' => $val["produk_id"]]);
+        if (!$produk) {
+            Yii::$app->session->setFlash('error', 'Produk tidak ditemukan.');
+            return $this->redirect('index');
+        }
+
+        $data = Favorit::findOne(['user_id' => Yii::$app->user->identity->id, 'products_id' => $produk->id]);
+
+        if (!$data) {
+            $data = new Favorit();
+            $data->user_id = Yii::$app->user->identity->id;
+            $data->products_id = $produk->id;
+            $data->created_at = date('Y-m-d H:i:s');
+        } else {
+            Yii::$app->session->setFlash('error', 'Produk sudah ditambahkan ke list favorit anda');
+            return $this->redirect('index');
+        }
+
+        if ($data->validate()) {
+            $data->save();
+            Yii::$app->session->setFlash('success', 'Produk berhasil ditambahkan ke list favorit anda');
+            return $this->goBack();
+        } else {
+            Yii::$app->session->setFlash('error', 'Terjadi kesalahan');
+            return $this->redirect('index');
+        }
+    }
+
     public function actionContact()
     {
         $model = new ContactForm();
@@ -697,21 +773,16 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
         $produk = Products::find()->where(['like', 'name', $q])->all(); //mencari semua produk berdasarkan nama
 
         $template = "";
-        $index = "";
 
         foreach ($produk as $prd) {
-            $template .= $this->renderPartial('_items', ['model' => $prd]);
-        } //untuk halaman shop
-
-        foreach ($produk as $pr) {
-            $index .= $this->renderPartial('_item', ['model' => $pr]);
-        } //untuk halaman index
+            $promo = Promo::find()->where(['products_id' => $prd->id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+            $template .= $this->renderPartial('_items', ['model' => $prd, 'promo' => $promo]);
+        }
 
         Yii::$app->response->format = Response::FORMAT_JSON; //merubah format menjadi JSON
 
         return [
             'data' => $template,
-            'index' => $index,
         ];
     }
 }

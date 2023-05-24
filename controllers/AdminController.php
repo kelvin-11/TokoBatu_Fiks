@@ -2,11 +2,14 @@
 
 namespace app\controllers;
 
+use app\models\Banner;
 use app\models\Category;
+use app\models\Favorit;
 use app\models\JasaKirim;
 use app\models\Pesanan;
 use app\models\PesananDetail;
 use app\models\Products;
+use app\models\Promo;
 use app\models\Toko;
 use app\models\User;
 use Yii;
@@ -26,6 +29,7 @@ class AdminController extends Controller
         $this->layout = '@app/views/layouts-admin/main';
         return parent::beforeAction($action);
     }
+
     /**
      * @inheritDoc
      */
@@ -55,213 +59,17 @@ class AdminController extends Controller
         }
 
         $customercount = User::find()->where(['role_id' => 1])->count();
-        $c = User::find()->where(['role_id' => 1]);
-        $count = $c->count();
-        $pagecustomer = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $customer = $c->offset($pagecustomer->offset)
-            ->limit($pagecustomer->limit)
-            ->all();
-
         $salercount = Toko::find()->count();
-        $s = Toko::find();
-        $count = $s->count();
-        $pagesaler = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $saler = $s->offset($pagesaler->offset)
-            ->limit($pagesaler->limit)
-            ->all();
-
-        $produkcount = Products::find()->count();
-        $p = Products::find();
-        $count = $p->count();
-        $pageproduk = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $produk = $p->offset($pageproduk->offset)
-            ->limit($pageproduk->limit)
-            ->all();
-
-        $jasacount = JasaKirim::find()->count();
-        $j = JasaKirim::find();
-        $count = $j->count();
-        $pagejasa = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $jasa = $j->offset($pagejasa->offset)
-            ->limit($pagejasa->limit)
-            ->all();
-
         $categorycount = Category::find()->count();
-        $c = Category::find();
-        $count = $c->count();
-        $pagecategory = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $category = $c->offset($pagecategory->offset)
-            ->limit($pagecategory->limit)
-            ->all();
+        $jasacount = JasaKirim::find()->count();
 
-        $pesanancount = pesanan::find()->where(['status' => 1])->count();
-        $p = pesanan::find()->where(['status' => 1]);
-        $count = $p->count();
-        $pagepesanan = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $pesanan = $p->offset($pagepesanan->offset)
-            ->limit($pagepesanan->limit)
-            ->all();
 
         return $this->render('index', [
-            'pagecustomer' => $pagecustomer,
-            'pagesaler' => $pagesaler,
-            'pageproduk' => $pageproduk,
-            'pagejasa' => $pagejasa,
-            'pagecategory' => $pagecategory,
-            'pagepesanan' => $pagepesanan,
-
             'customercount' => $customercount,
             'salercount' => $salercount,
-            'produkcount' => $produkcount,
-            'jasacount' => $jasacount,
             'categorycount' => $categorycount,
-            'pesanancount' => $pesanancount,
-
-            'customer' => $customer,
-            'saler' => $saler,
-            'produk' => $produk,
-            'jasa' => $jasa,
-            'category' => $category,
-            'pesanan' => $pesanan,
+            'jasacount' => $jasacount,
         ]);
-    }
-
-    //Produk =====================================================================================
-    public function actionProduk()
-    {
-        if (Yii::$app->user->isGuest) {
-            return $this->redirect('/TokoBatu/web/login/login');
-        }
-
-        if (Yii::$app->user->identity->role_id != 2) {
-            return $this->goHome();
-        }
-
-
-        $category = Category::find()->all();
-        $identy = Yii::$app->user->identity;
-        $data = Products::find()->where(['user_id' => $identy->id]);
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        return $this->render('produk\produk', [
-            'model' => $model,
-            'pagination' => $pagination,
-            'category' => $category
-        ]);
-    }
-
-    public function actionBuatProduk()
-    {
-        if (Yii::$app->user->isGuest) {
-            return $this->redirect('/TokoBatu/web/login/login');
-        }
-
-        $identy = Yii::$app->user->identity;
-        if ($identy->role_id != 2) {
-            return $this->goHome();
-        }
-
-        $model = new Products();
-
-        if ($model->load($_POST)) {
-            $model->user_id = Yii::$app->user->identity->id;
-
-            $gambar = UploadedFile::getInstance($model, 'img');
-            if ($gambar != NULL) {
-                $model->img = $gambar->name;
-                $arr = explode(".", $gambar->name);
-                $extension = end($arr);
-
-                $model->img = Yii::$app->security->generateRandomString() . ".{$extension}";
-
-                if (file_exists(Yii::getAlias("@app/web/upload/")) == false) {
-                    mkdir(Yii::getAlias("@app/web/upload/"), 0777, true);
-                }
-                $path = Yii::getAlias("@app/web/upload/") . $model->img;
-                $gambar->saveAs($path);
-            }
-            if ($model->save()) {
-                Yii::$app->session->setFlash("success", "Produk berhasil dibuat");
-                return $this->redirect(['produk', 'id' => $model->id]);
-            }
-        } elseif (!\Yii::$app->request->isPost) {
-            $model->load($_GET);
-        }
-
-        return $this->render('produk\buat-produk', [
-            'model' => $model
-        ]);
-    }
-
-    public function actionUpdateProduk($id)
-    {
-        if (Yii::$app->user->isGuest) {
-            return $this->redirect('/TokoBatu/web/login/login');
-        }
-
-        $identy = Yii::$app->user->identity;
-        if ($identy->role_id != 2) {
-            return $this->goHome();
-        }
-
-        $model = Products::findOne($id);
-
-        $gambar = $model->img;
-        if ($model->load($_POST)) {
-            $img = UploadedFile::getInstance($model, 'img');
-            if ($img != NULL) {
-                # store the source file name
-                $model->img = $img->name;
-                $arr = explode(".", $img->name);
-                $extension = end($arr);
-
-                # generate a unique file name
-                $model->img = Yii::$app->security->generateRandomString() . ".{$extension}";
-
-                # the path to save file
-                if (file_exists(Yii::getAlias("@app/web/upload/")) == false) {
-                    mkdir(Yii::getAlias("@app/web/upload/"), 0777, true);
-                }
-                $path = Yii::getAlias("@app/web/upload/") . $model->img;
-                if ($gambar != NULL) {
-                    $img->saveAs($path);
-                } else {
-                    $img->saveAs($path);
-                }
-            } else {
-                $model->img = $gambar;
-            }
-            if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Data berhasil di rubah');
-                return $this->redirect('produk');
-            }
-        }
-        return $this->render('produk\edit-produk', [
-            'model' => $model,
-        ]);
-    }
-
-    public function actionDeleteProduk($id)
-    {
-        Products::findOne(['id' => $id])->delete();
-
-        $isPivot = strstr('$id', ',');
-        if ($isPivot == true) {
-            return $this->redirect(Url::previous());
-        } elseif (isset(\Yii::$app->session['__crudReturnUrl']) && \Yii::$app->session['__crudReturnUrl'] != '/') {
-            Url::remember(null);
-            $url = \Yii::$app->session['__crudReturnUrl'];
-            \Yii::$app->session['__crudReturnUrl'] = null;
-
-            return $this->redirect($url);
-        } else {
-            Yii::$app->session->setFlash('success', 'Data berhasil di hapus');
-            return $this->redirect(['produk']);
-        }
     }
 
     //Category ===============================================================================================
@@ -275,17 +83,16 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
+        $model = Category::find()->orderBy(['created_at' => SORT_DESC])->all();
+        // $count = $data->count();
+        // $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
+        // $model = $data->offset($pagination->offset)
+        //     ->limit($pagination->limit)
+        //     ->all();
 
-        $data = Category::find();
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        return $this->render('produk\category', [
+        return $this->render('kategori\category', [
             'model' => $model,
-            'pagination' => $pagination
+            // 'pagination' => $pagination
         ]);
     }
 
@@ -300,11 +107,13 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
+        //menampung category baru di variabel model
         $model = new Category();
 
         $gambar = $model->img;
         if ($model->load($_POST)) {
             $img = UploadedFile::getInstance($model, 'img');
+            $model->created_at = date('Y-m-d H:i:s');
             if ($img != NULL) {
                 # store the source file name
                 $model->img = $img->name;
@@ -328,11 +137,11 @@ class AdminController extends Controller
                 $model->img = $gambar;
             }
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Data Category berhasil di Buat');
+                Yii::$app->session->setFlash('success', 'Data berhasil di Buat');
                 return $this->redirect(['category', 'id' => $model->id]);
             }
         }
-        return $this->render('produk\buat-category', [
+        return $this->render('kategori\buat-category', [
             'model' => $model,
         ]);
     }
@@ -342,7 +151,7 @@ class AdminController extends Controller
         if (Yii::$app->user->isGuest) {
             return $this->redirect('/TokoBatu/web/login/login');
         }
-        
+
         $identy = Yii::$app->user->identity;
         if ($identy->role_id != 2) {
             return $this->goHome();
@@ -353,6 +162,7 @@ class AdminController extends Controller
         $gambar = $model->img;
         if ($model->load($_POST)) {
             $img = UploadedFile::getInstance($model, 'img');
+            $model->updated_at = date('Y-m-d H:i:s');
             if ($img != NULL) {
                 # store the source file name
                 $model->img = $img->name;
@@ -380,7 +190,7 @@ class AdminController extends Controller
                 return $this->redirect('category');
             }
         }
-        return $this->render('produk\edit-category', [
+        return $this->render('kategori\edit-category', [
             'model' => $model,
         ]);
     }
@@ -415,17 +225,10 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
-
-        $data = JasaKirim::find();
-        $count = $data->count();
-        $pagination =  new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $model = JasaKirim::find()->orderBy(['id' => SORT_DESC])->all();
 
         return $this->render('jasa\index', [
             'model' => $model,
-            'pagination' => $pagination
         ]);
     }
 
@@ -437,6 +240,7 @@ class AdminController extends Controller
         if ($model) {
             $model->name = $val['name'];
             $model->slug = $val['slug'];
+            $model->created_at = date('Y-m-d H:i:s');
             if ($model->validate()) {
                 $model->save();
                 Yii::$app->session->setFlash('success', 'Data Berhasil Di Buat');
@@ -456,9 +260,10 @@ class AdminController extends Controller
         if ($model) {
             $model->name = $val['name'];
             $model->slug = $val['slug'];
+            $model->updated_at = date('Y-m-d H:i:s');
             if ($model->validate()) {
                 $model->save();
-                Yii::$app->session->setFlash('success', 'Data Berhasil Di Buat');
+                Yii::$app->session->setFlash('success', 'Data Berhasil Di Rubah');
                 return $this->redirect('jasa');
             } else {
                 Yii::$app->session->setFlash('error', 'Validasi tidak valid, dimohon untuk membuat ulang data!');
@@ -486,7 +291,7 @@ class AdminController extends Controller
         }
     }
 
-    //Penjualan ===============================================================================================================
+    //Transaksi ===============================================================================================================
     public function actionPenjualan()
     {
         if (Yii::$app->user->isGuest) {
@@ -497,18 +302,11 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
-
         $jasa = JasaKirim::find()->all();
-        $data = Pesanan::find()->where(['status' => 1]);
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $model = Pesanan::find()->where(['status' => 1])->orderBy(['id' => SORT_DESC])->all();
 
-        return $this->render('penjualan\semua-penjualan', [
+        return $this->render('Transaksi\semua-penjualan', [
             'model' => $model,
-            'pagination' => $pagination,
             'jasa' => $jasa
         ]);
     }
@@ -523,9 +321,10 @@ class AdminController extends Controller
             $model->status_pemesanan = $val['status_pemesanan'];
             $model->ongkir = $val['ongkir'];
             $model->total_harga = $val['harga'];
+            $model->updated_at = date('Y-m-d H:i:s');
             if ($model->validate()) {
                 $model->save();
-                Yii::$app->session->setFlash('success', 'Data Penjualan berhasil di rubah');
+                Yii::$app->session->setFlash('success', 'Data berhasil di rubah');
                 return $this->redirect('penjualan');
             } else {
                 Yii::$app->session->setFlash('error', 'Ada yang salah');
@@ -564,17 +363,10 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
-
-        $data = User::find()->where(['role_id' => 1]);
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $model = User::find()->where(['role_id' => 1])->orderBy(['id' => SORT_DESC])->all();
 
         return $this->render('customer\customer-list', [
             'model' => $model,
-            'pagination' => $pagination
         ]);
     }
 
@@ -597,7 +389,7 @@ class AdminController extends Controller
         }
     }
 
-    //Penjual ====================================================================================================================
+    //Toko ====================================================================================================================
     public function actionPenjual()
     {
         if (Yii::$app->user->isGuest) {
@@ -608,17 +400,10 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
+        $model = Toko::find()->orderBy(['id' => SORT_DESC])->all();
 
-        $data = Toko::find();
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        return $this->render('penjual\index', [
+        return $this->render('Toko\index', [
             'model' => $model,
-            'pagination' => $pagination
         ]);
     }
 
@@ -635,6 +420,18 @@ class AdminController extends Controller
                 } else {
                     Yii::$app->session->setFlash('error', 'Gagal memproses data');
                 }
+            }
+            $produk = Products::find()->where(['toko_id' => $model->id])->all();
+            foreach ($produk as $pd) {
+                $favorit = Favorit::find()->where(['products_id' => $pd->id])->all();
+                foreach ($favorit as $fv) {
+                    $fv->delete();
+                }
+                $pd->delete();
+            }
+            $promo = Promo::find()->where(['toko_id' => $model->id])->all();
+            foreach ($promo as $pr) {
+                $pr->delete();
             }
             $model->delete();
             Yii::$app->session->setFlash('success', 'Data berhasil di hapus');
@@ -653,16 +450,10 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
-        $data = Toko::find();
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $model = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $model = Toko::find()->orderBy(['id' => SORT_DESC])->all();
 
         return $this->render('laporan\produk-penjual', [
             'model' => $model,
-            'pagination' => $pagination
         ]);
     }
 
@@ -676,23 +467,23 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
+        // $data = Products::find()->with('category');
+        // if (isset($_GET['Products'])) {
+        //     $search_args = \Yii::$app->request->get()['Products'];
+        //     $data->andFilterWhere([
+        //         'category_id' => $search_args['category_id']
+        //     ]);
+        // }
+        // $count = $data->count();
+        // $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
+        // $produk = $data->offset($pagination->offset)
+        //     ->limit($pagination->limit)
+        //     ->all();
 
-        $data = Products::find()->with('category');
-        if (isset($_GET['Products'])) {
-            $search_args = \Yii::$app->request->get()['Products'];
-            $data->andFilterWhere([
-                'category_id' => $search_args['category_id']
-            ]);
-        }
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $produk = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $produk = Products::find()->orderBy(['id' => SORT_DESC])->all();
 
         return $this->render('laporan\stok-produk', [
             'produk' => $produk,
-            'pagination' => $pagination
         ]);
     }
 
@@ -706,23 +497,148 @@ class AdminController extends Controller
             return $this->goHome();
         }
 
+        // $data = Products::find()->with('category');
+        // if (isset($_GET['Products'])) {
+        //     $search_args = \Yii::$app->request->get()['Products'];
+        //     $data->andFilterWhere([
+        //         'category_id' => $search_args['category_id']
+        //     ]);
+        // }
+        // $count = $data->count();
+        // $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
+        // $produk = $data->offset($pagination->offset)
+        //     ->limit($pagination->limit)
+        //     ->all();
 
-        $data = Products::find()->with('category');
-        if (isset($_GET['Products'])) {
-            $search_args = \Yii::$app->request->get()['Products'];
-            $data->andFilterWhere([
-                'category_id' => $search_args['category_id']
-            ]);
-        }
-        $count = $data->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 5]);
-        $produk = $data->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $produk = Products::find()->orderBy(['id' => SORT_DESC])->all();
 
         return $this->render('laporan\jumlah-penjualan', [
             'produk' => $produk,
-            'pagination' => $pagination,
         ]);
+    }
+
+    //Upload Banner ============================================================================================================================
+    public function actionBanner()
+    {
+        $model = Banner::find()->orderBy(['id' => SORT_DESC])->all();
+        return $this->render('banner/index', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionBuatBanner()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('/TokoBatu/web/login/login');
+        }
+
+        $identy = Yii::$app->user->identity;
+        if ($identy->role_id != 2) {
+            return $this->goHome();
+        }
+
+        $model = new Banner();
+
+        $gambar = $model->image;
+        if ($model->load($_POST)) {
+            $image = UploadedFile::getInstance($model, 'image');
+            $model->created_at = date('Y-m-d H:i:s');
+            if ($image != NULL) {
+                # store the source file name
+                $model->image = $image->name;
+                $arr = explode(".", $image->name);
+                $extension = end($arr);
+
+                # generate a unique file name
+                $model->image = Yii::$app->security->generateRandomString() . ".{$extension}";
+
+                # the path to save file
+                if (file_exists(Yii::getAlias("@app/web/upload/")) == false) {
+                    mkdir(Yii::getAlias("@app/web/upload/"), 0777, true);
+                }
+                $path = Yii::getAlias("@app/web/upload/") . $model->image;
+                if ($gambar != NULL) {
+                    $image->saveAs($path);
+                } else {
+                    $image->saveAs($path);
+                }
+            } else {
+                $model->image = $gambar;
+            }
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Data berhasil di Buat');
+                return $this->redirect(['banner', 'id' => $model->id]);
+            }
+        }
+        return $this->render('banner\buat-banner', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionUpdateBanner($id)
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('/TokoBatu/web/login/login');
+        }
+
+        $identy = Yii::$app->user->identity;
+        if ($identy->role_id != 2) {
+            return $this->goHome();
+        }
+
+        $model = Banner::findOne($id);
+
+        $gambar = $model->image;
+        if ($model->load($_POST)) {
+            $image = UploadedFile::getInstance($model, 'image');
+            if ($image != NULL) {
+                # store the source file name
+                $model->image = $image->name;
+                $arr = explode(".", $image->name);
+                $extension = end($arr);
+
+                # generate a unique file name
+                $model->image = Yii::$app->security->generateRandomString() . ".{$extension}";
+
+                # the path to save file
+                if (file_exists(Yii::getAlias("@app/web/upload/")) == false) {
+                    mkdir(Yii::getAlias("@app/web/upload/"), 0777, true);
+                }
+                $path = Yii::getAlias("@app/web/upload/") . $model->image;
+                if ($gambar != NULL) {
+                    $image->saveAs($path);
+                } else {
+                    $image->saveAs($path);
+                }
+            } else {
+                $model->image = $gambar;
+            }
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Data berhasil di rubah');
+                return $this->redirect('banner');
+            }
+        }
+        return $this->render('banner\edit-banner', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionDeleteBanner($id)
+    {
+        Banner::findOne(['id' => $id])->delete();
+
+        $isPivot = strstr('$id', ',');
+        if ($isPivot == true) {
+            return $this->redirect(Url::previous());
+        } elseif (isset(\Yii::$app->session['__crudReturnUrl']) && \Yii::$app->session['__crudReturnUrl'] != '/') {
+            Url::remember(null);
+            $url = \Yii::$app->session['__crudReturnUrl'];
+            \Yii::$app->session['__crudReturnUrl'] = null;
+
+            return $this->redirect($url);
+        } else {
+            Yii::$app->session->setFlash('success', 'Data berhasil di hapus');
+            return $this->redirect(['banner']);
+        }
     }
 }

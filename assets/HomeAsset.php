@@ -12,24 +12,15 @@ class HomeAsset extends AssetBundle
         'css/site.css',
         //Atlantis
         "Atlantis-Lite-master/assets/css/atlantis.css",
-        "Atlantis-Lite-master/assets/css/atlantis.css.map",
         "Atlantis-Lite-master/assets/css/atlantis.min.css",
         "Atlantis-Lite-master/assets/css/bootstrap.min.css",
         "Atlantis-Lite-master/assets/css/demo.css",
         "Atlantis-Lite-master/assets/css/fonts.css",
         "Atlantis-Lite-master/assets/css/fonts.min.css",
+        "Atlantis-Lite-master/assets/img/icon.ico",
 
-        //Fontawesome
-        'fontawesome/css/all.css',
-        'fontawesome/css/all.min.css',
-        'fontawesome/css/brands.css',
-        'fontawesome/css/brands.min.css',
-        'fontawesome/css/fontawesome.css',
-        'fontawesome/css/fontawesome.min.css',
-        // 'fontawesome/css/reguler.min.css',
-        // 'fontawesome/css/reguler.css',
-        'fontawesome/css/solid.css',
-        'fontawesome/css/solid.min.css',
+        //toastify
+        "//cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     ];
     public $js = [
         //Atlantis
@@ -49,6 +40,14 @@ class HomeAsset extends AssetBundle
         "Atlantis-Lite-master/assets/js/plugin/sweetalert/sweetalert.min.js",
         "Atlantis-Lite-master/assets/js/atlantis.min.js",
         "Atlantis-Lite-master/assets/js/setting-demo.js",
+        "Atlantis-Lite-master/assets/js/plugin/webfont/webfont.min.js",
+        // "Atlantis-Lite-master/assets/js/setting-demo2.js",
+
+        //sweat alert
+        '//cdn.jsdelivr.net/npm/sweetalert2@10',
+
+        //toastify
+        "//cdn.jsdelivr.net/npm/toastify-js",
     ];
     public $depends = [
         'yii\web\YiiAsset',

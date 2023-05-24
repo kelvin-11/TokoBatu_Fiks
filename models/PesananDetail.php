@@ -31,7 +31,7 @@ class PesananDetail extends \yii\db\ActiveRecord
         }
         if (!isset($parent['img'])) {
             $parent['img'] = function ($model) {
-                return $this->getImageUrl($model->img);
+                return $this->getImageUrl($model->products->img);
             };
         }
         return $parent;

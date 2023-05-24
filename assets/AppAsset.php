@@ -32,6 +32,7 @@ class AppAsset extends AssetBundle
         "ogani-master/css/owl.carousel.min.css",
         "ogani-master/css/slicknav.min.css",
         "ogani-master/css/style.css",
+        "//fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap",
 
         //Fontawesome
         'fontawesome/css/all.css',
@@ -42,6 +43,12 @@ class AppAsset extends AssetBundle
         'fontawesome/css/fontawesome.min.css',
         'fontawesome/css/solid.css',
         'fontawesome/css/solid.min.css',
+
+        //toastify
+        "//cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css",
+
+        //search select
+        // "//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css",
     ];
     public $js = [
         //ogani master
@@ -54,8 +61,14 @@ class AppAsset extends AssetBundle
         "ogani-master/js/owl.carousel.min.js",
         "ogani-master/js/main.js",
 
-        //chart js
-        "https://cdn.jsdelivr.net/npm/chart.js"
+        //toastify
+        "//cdn.jsdelivr.net/npm/toastify-js",
+
+        //search select
+        // "//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js",
+
+        //bootsrap
+        "//cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js",
     ];
     public $depends = [
         'yii\web\YiiAsset',

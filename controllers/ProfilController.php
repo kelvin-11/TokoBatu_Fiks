@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Favorit;
 use Yii;
 use yii\web\Controller;
 use app\models\Pesanan;
@@ -12,6 +13,13 @@ use yii\web\UploadedFile;
 
 class ProfilController extends Controller
 {
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+        $this->layout = '@app/views/layouts-profil/main';
+        return parent::beforeAction($action);
+    }
+
     public function actions()
     {
         return [
@@ -24,16 +32,6 @@ class ProfilController extends Controller
             ],
         ];
     }
-    public function actionSideMenu()
-    {
-        $model = User::find()->where(['id' => Yii::$app->user->identity])->one();
-        $identy = Yii::$app->user->identity;
-
-        return $this->render('sidemenu.profil', [
-            'model' => $model,
-            'identy' => $identy
-        ]);
-    }
 
     public function actionProfil()
     {
@@ -42,41 +40,26 @@ class ProfilController extends Controller
         }
 
         $model = User::find()->where(['id' => Yii::$app->user->identity])->one();
-        $identy = Yii::$app->user->identity;
         $history = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1])->count();
-        $berhasil = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1])->andWhere(['status_pemesanan' => 'sukses'])->count();
-        $pending = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 0])->andWhere(['status_pemesanan' => 'pending'])->count();
-        $dikonfirmasi = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1])->andWhere(['status_pemesanan' => 'dikonfirmasi'])->count();
-        $dalamperjalanan = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1])->andWhere(['status_pemesanan' => 'dalam perjalanan'])->count();
-        $gagal = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1])->andWhere(['status_pemesanan' => 'gagal'])->count();
+        $favorit = Favorit::find()->where(['user_id' => $model->id])->count();
 
         $pesanan = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 0])->one();
         if ($pesanan != null) {
             $keranjang = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->count();
             return $this->render('profil', [
                 'model' => $model,
-                'identy' => $identy,
                 'pesanan' => $pesanan,
                 'keranjang' => $keranjang,
                 'history' => $history,
-                'berhasil' => $berhasil,
-                'pending' => $pending,
-                'dikonfirmasi' => $dikonfirmasi,
-                'dalamperjalanan' => $dalamperjalanan,
-                'gagal' => $gagal
+                'favorit' => $favorit,
             ]);
         }
 
         return $this->render('profil', [
             'model' => $model,
-            'identy' => $identy,
             'pesanan' => $pesanan,
             'history' => $history,
-            'berhasil' => $berhasil,
-            'pending' => $pending,
-            'dikonfirmasi' => $dikonfirmasi,
-            'dalamperjalanan' => $dalamperjalanan,
-            'gagal' => $gagal
+            'favorit' => $favorit,
         ]);
     }
 
@@ -93,6 +76,7 @@ class ProfilController extends Controller
         if ($model->load($_POST)) {
             $model->no_hp = $model->no_hp;
             $model->alamat = $model->alamat;
+            $model->updated_at = date('Y-m-d H:i:s');
 
             $image = UploadedFile::getInstance($model, 'img');
             if ($image != NULL) {
@@ -117,7 +101,7 @@ class ProfilController extends Controller
             } else {
                 $model->img = $oldPhotoUrl;
             }
-            if ($model->save(false)) {
+            if ($model->save()) {
                 Yii::$app->session->setFlash("success", "Profile berhasil diubah");
             } else {
                 Yii::$app->session->setFlash("error", "Profile gagal diubah");
@@ -137,21 +121,33 @@ class ProfilController extends Controller
             return $this->redirect('/TokoBatu/web/login/login');
         }
 
-        $identy = Yii::$app->user->identity;
-
         $model = User::findOne(['id' => Yii::$app->user->identity]);
-        $pesanan = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1]);
-        $count = $pesanan->count();
-        $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 6]);
-        $pesanans = $pesanan->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
+        $pesanans = Pesanan::find()->where(['user_id' => $model->id])->andWhere(['status' => 1])->orderBy(['id' => SORT_DESC])->all();
 
         return $this->render('history', [
             'model' => $model,
-            'identy' => $identy,
-            'pagination' => $pagination,
             'pesanans' => $pesanans,
         ]);
+    }
+
+    public function actionFavorit()
+    {
+        $favorit = Favorit::find()->where(['user_id' => Yii::$app->user->identity->id])->orderBy(['id' => SORT_DESC])->all();
+        return $this->render('favorit', [
+            'favorit' => $favorit,
+        ]);
+    }
+
+    public function actionDeleteFavorit($id)
+    {
+        $data = Favorit::findOne($id);
+        if ($data) {
+            $data->delete();
+            Yii::$app->session->setFlash('success', 'Data berhasil dihapus');
+            return $this->redirect('favorit');
+        } else {
+            Yii::$app->session->setFlash('error', 'Gagal menghapus data');
+            return $this->redirect('favorit');
+        }
     }
 }

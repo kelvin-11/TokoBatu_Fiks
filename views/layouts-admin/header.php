@@ -3,9 +3,15 @@
     <div class="logo-header" data-background-color="blue">
 
         <a href="#" class="logo">
-            <img src="<?= Yii::$app->request->baseUrl . '/img/loli2.jpg' ?>" alt="navbar brand" class="navbar-brand" style="width: 33pt; height:35pt;border-radius: 50%">
+            <div class="row">
+                <div class="col-4">
+                    <img src="<?= Yii::$app->request->baseUrl . '/img/toko-logo.png' ?>" alt="" class="navbar-brand" style="width: 33pt; height:35pt;">
+                </div>
+                <div class="col-8">
+                    <h4 class="text-light" style="margin-top: 15px">Admin</h4>
+                </div>
+            </div>
         </a>
-        <h5 class="text-light ms-4">Admin</h5>
         <button class="topbar-toggler more"><i class="icon-options-vertical"></i></button>
         <div class="nav-toggle">
             <button class="btn btn-toggle toggle-sidebar">
@@ -19,7 +25,7 @@
     <nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2">
 
         <div class="container-fluid">
-            <div class="collapse" id="search-nav">
+            <!-- <div class="collapse" id="search-nav">
                 <form class="navbar-left navbar-form nav-search mr-md-3">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -30,14 +36,14 @@
                         <input type="text" placeholder="Search ..." class="form-control">
                     </div>
                 </form>
-            </div>
+            </div> -->
             <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
-                <li class="nav-item toggle-nav-search hidden-caret">
+                <!-- <li class="nav-item toggle-nav-search hidden-caret">
                     <a class="nav-link" data-toggle="collapse" href="#search-nav" role="button" aria-expanded="false" aria-controls="search-nav">
                         <i class="fa fa-search"></i>
                     </a>
-                </li>
-                <li class="nav-item dropdown hidden-caret">
+                </li> -->
+                <!-- <li class="nav-item dropdown hidden-caret">
                     <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-envelope"></i>
                     </a>
@@ -70,8 +76,8 @@
                             <a class="see-all" href="javascript:void(0);">See all messages<i class="fa fa-angle-right"></i> </a>
                         </li>
                     </ul>
-                </li>
-                <li class="nav-item dropdown hidden-caret">
+                </li> -->
+                <!-- <li class="nav-item dropdown hidden-caret">
                     <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bell"></i>
                         <span class="notification">4</span>
@@ -99,8 +105,8 @@
                             <a class="see-all" href="javascript:void(0);">See all notifications<i class="fa fa-angle-right"></i> </a>
                         </li>
                     </ul>
-                </li>
-                <li class="nav-item dropdown hidden-caret">
+                </li> -->
+                <!-- <li class="nav-item dropdown hidden-caret">
                     <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
                         <i class="fas fa-layer-group"></i>
                     </a>
@@ -152,35 +158,36 @@
                             </div>
                         </div>
                     </div>
-                </li>
+                </li> -->
                 <li class="nav-item dropdown hidden-caret">
                     <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
                         <div class="avatar-sm">
-                            <img src="<?= yii\helpers\Url::to(['/img/loli2.jpg/']) ?>" alt="" class="avatar-img rounded-circle">
+                            <img src="<?= yii\helpers\Url::to(['/img/toko-logo.png']) ?>" alt="" class="avatar-img rounded-circle" style="width: 33pt; height:35pt;border-radius: 0%!important">
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-user animated fadeIn">
                         <div class="dropdown-user-scroll scrollbar-outer">
                             <li>
                                 <div class="user-box">
-                                    <div class="avatar-lg"><img src="<?= Yii::$app->request->baseUrl . '/img/loli2.jpg' ?>" alt="..." class="avatar-img rounded"></div>
+                                    <div class="avatar-lg"><img src="<?= Yii::$app->request->baseUrl . '/img/logo-toko.png' ?>" alt="" class="avatar-img rounded" style="width: 35pt;height: 39pt"></div>
                                     <div class="u-text">
                                         <h4><?= Yii::$app->user->identity->name ?></h4>
-                                        <p class="text-muted"><?= Yii::$app->user->identity->email ?></p><a href="#" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                                        <p class="text-muted"><?= Yii::$app->user->identity->email ?></p>
+                                        <!-- <a href="#" class="btn btn-xs btn-secondary btn-sm">View Profile</a> -->
                                     </div>
                                 </div>
                             </li>
                             <li>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">My Profile</a>
-                                <a class="dropdown-item" href="#">My Balance</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Account Setting</a>
-                                <div class="dropdown-divider"></div>
+                                <!-- <a class="dropdown-item" href="#">My Profile</a>
+                                <a class="dropdown-item" href="#">My Balance</a> -->
+                                <!-- <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Account Setting</a> -->
+                                <!-- <div class="dropdown-divider"></div> -->
                                 <form action="<?= \yii\helpers\Url::to(['login/logout']) ?>" method="POST" id="logout">
                                     <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken ?>">
                                 </form>
-                                <button class="dropdown-item font-weight-bold" onclick="document.querySelector('#logout').submit()"> Logout</button>
+                                <button class="dropdown-item font-weight-bold" onclick="document.querySelector('#logout').submit()"><i class="fas fa-door-closed me-2"></i> Logout</button>
                             </li>
                         </div>
                     </ul>

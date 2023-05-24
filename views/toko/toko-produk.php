@@ -4,79 +4,47 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 ?>
-<?php if (Yii::$app->session->hasFlash('success')) : ?>
-    <div class="alert alert-success alert-dismissable">
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-        <p><i class="icon fa fa-check"></i>Saved!</p>
-        <?= Yii::$app->session->getFlash('success') ?>
-    </div>
-<?php endif; ?>
-<?php if (Yii::$app->session->hasFlash('error')) : ?>
-    <div class="alert alert-danger alert-dismissable">
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-        <h4><i class="icon fa fa-close"></i>Not Saved!</h4>
-        <?= Yii::$app->session->getFlash('error') ?>
-    </div>
-<?php endif; ?>
 
-<div class="site-index">
-    <section class="hero">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <?= $this->render('sidemenu/toko', [
-                        'data' => $data,
-                    ]) ?>
-                </div>
-                <div class="col-lg-8 col-md-6 col-sm-12 col-12 profile-section">
-                    <div class="card bg-warning mt-2">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-9 mt-2">
-                                    <h4 class="text-isalam-1 font-weight-bold text-detail-program">Produk Saya</h4>
-                                </div>
-                                <div class="col-lg-2 ms-3 mt-2">
-                                    <p>
-                                        <?= Html::a('<i class="fa fa-plus"></i> Tambah Baru', ['create-produk', 'id' => Yii::$app->user->identity->id], ['class' => 'btn btn-success', 'style' => 'width:140px']) ?>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row pl-20 pr-20">
-                                <div class="table-responsive mt-2">
-                                    <?= GridView::widget([
-                                        'layout' => "{summary}{items}<div class='product__pagination d-flex justify-content-center'>{pager}</div>",
-                                        'dataProvider' => $dataProvider,
-                                        'pager'        => [
-                                            'class'          => yii\widgets\LinkPager::className(),
-                                        ],
-                                        // 'filterModel' => $searchModel,
-                                        'tableOptions' => ['class' => 'table table-dark text-light text-center fw-bold'],
-                                        'headerRowOptions' => ['class' => 'text-warning fw-bold'],
-                                        'columns' => [
-                                            ['class' => 'yii\grid\SerialColumn'],
-                                            [
-                                                'attribute' => 'name',
-                                                'filter' => false,
-                                            ],
-                                            [
-                                                'attribute' => 'harga',
-                                                'filter' => false,
-                                                'value' => function ($model) {
-                                                    return number_format($model->harga);
-                                                },
-                                            ],
-                                            [
-                                                'attribute' => 'stok',
-                                                'filter' => false,
-                                            ],
-                                            \app\components\ActionButton::getButtonsSaya(),
-                                        ],
-                                    ]); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </section>
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Produk</h1>
+</div>
+
+<div class="card shadow mb-5">
+    <div class="card-header py-3">
+        <div style="justify-content: space-between;display:flex">
+            <h6 class="m-0 font-weight-bold text-primary" style="padding-top: 10px;">DataTabel Produk</h6>
+            <?= Html::a('<i class="fa fa-plus"></i> Tambah Baru', ['create-produk', 'id' => Yii::$app->user->identity->id], ['class' => 'btn bg-gradient-success text-light fw-bold', 'style' => 'width:150px;']) ?>
+        </div>
+    </div>
+    <div class="card-body">
+        <?= GridView::widget([
+            'layout' => "{items}<div class='d-flex justify-content-center'>{pager}</div>",
+            'dataProvider' => $dataProvider,
+            // 'pager'        => [
+            //     'class'          => yii\widgets\LinkPager::className(),
+            // ],
+            // 'filterModel' => $searchModel,
+            'tableOptions' => ['class' => 'table table-bordered', "id" => "dataTable", "width" => "100%", "cellspacing" => "0"],
+            'headerRowOptions' => ['class' => 'text-dark fw-bold'],
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                [
+                    'attribute' => 'name',
+                    'filter' => false,
+                ],
+                [
+                    'attribute' => 'harga',
+                    'filter' => false,
+                    'value' => function ($model) {
+                        return number_format($model->harga);
+                    },
+                ],
+                [
+                    'attribute' => 'stok',
+                    'filter' => false,
+                ],
+                \app\components\ActionButton::getButtonsSaya(),
+            ],
+        ]); ?>
+    </div>
 </div>

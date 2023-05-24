@@ -71,6 +71,14 @@
     }
 </script>
 
+<!-- Menambahkan harga saat promo habis -->
+<script>
+    function updateValue(id) {
+        let harga = $('#promohabis-' + id).val();
+        alert(harga);
+    }
+</script>
+
 <!-- Alert stok habis -->
 <script>
     $(document).ready(function() {
@@ -110,7 +118,7 @@
             })
         })
 
-        //Menampilkan jasa kirim setelah memeilih kota asal
+        //Menampilkan Card jasa kirim setelah memeilih kota asal
         $('#jasacard').hide()
         $('#hr').show()
         $('#distrik').on('change', function(e) {
@@ -123,12 +131,12 @@
 
         //menampilkan data paket setelah memilih jasa kirim
         $('#jasa').on('change', function() {
-            //mendapatkan jasa yang dipili
+            //mendapatkan jasa yang dipilih
             var jasa_terpilih = $('option:selected', '#jasa').attr("slug")
             //mendapatkan id_kota/kabupaten yang dipilih
             var distrik_terpilih = $('option:selected', '#distrik').attr("id_distrik")
             //mendapatkan total_berat dari inputan
-            var total_berat = $('#berat').val()
+            var total_berat = $('#berat').val();
 
             $.ajax({
                 type: 'POST',
@@ -164,7 +172,7 @@
             })
         })
 
-        //jika memilih kota/kabupaten memasukkan data ke inputan
+        //Saat memilih kota/kabupaten memasukkan data ke inputan
         $('#distrik').on('change', function() {
             var provinsi_terpilih = $("option:selected", this).attr("nama_provinsi")
             var distrik_terpilih = $("option:selected", this).attr("nama_distrik")
@@ -196,11 +204,6 @@
                     } else {
                         $('#template').html("Produk Yang Anda Cari Tidak Tersedia")
                     }
-                    if (hasil.index != "") {
-                        $('#index').html(hasil.index)
-                    } else {
-                        $('#index').html("Produk Yang Anda Cari Tidak Tersedia")
-                    }
                 }
             })
         })
@@ -230,4 +233,45 @@
             }
         })
     })
+</script> -->
+
+<!-- Sweat alert -->
+<script>
+    <?php if (Yii::$app->session->hasFlash('success')) : ?>
+        Toastify({
+            text: "<?= Yii::$app->session->getFlash('success') ?>",
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "#7fad39",
+            },
+            onClick: function() {}
+        }).showToast();
+    <?php endif ?>
+    <?php if (Yii::$app->session->hasFlash('error')) : ?>
+        Toastify({
+            text: "<?= Yii::$app->session->getFlash('error') ?>",
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "#ED2B2A",
+            },
+            onClick: function() {}
+        }).showToast();
+    <?php endif ?>
+</script>
+
+<!-- Select Search -->
+<!-- <script>
+    $(document).ready(function() {
+        $('.form-select').select2();
+    });
 </script> -->

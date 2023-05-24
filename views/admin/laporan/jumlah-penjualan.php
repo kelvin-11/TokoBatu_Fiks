@@ -8,7 +8,7 @@ use yii\helpers\Url;
 
 ?>
 <div class="page-header">
-    <h4 class="page-title">Laporan</h4>
+    <h4 class="page-title">Laporan Penjualan</h4>
     <ul class="breadcrumbs">
         <li class="nav-home">
             <a href="<?= Url::to(['index']); ?>">
@@ -25,7 +25,7 @@ use yii\helpers\Url;
             <i class="flaticon-right-arrow"></i>
         </li>
         <li class="nav-item">
-            <a href="#">Jumlah Penjualan</a>
+            <a href="#">Laporan Penjualan</a>
         </li>
     </ul>
 </div>
@@ -34,18 +34,14 @@ use yii\helpers\Url;
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <div class="row">
-                    <div class="col-lg-9">
-                        <div class="card-title">Laporan Jumlah Penjualan</div>
-                    </div>
-                    <div class="col-lg-3">
-                        <a href="<?= Url::to(['/admin/jumlah-penjualan']) ?>" class="btn btn-success ms-5">Semua Category</a>
-                    </div>
-                </div>
+                <div class="card-title">Laporan Penjualan</div>
+                <!-- <div style="justify-content: space-between;display:flex">
+                    <a href="<?= Url::to(['/admin/jumlah-penjualan']) ?>" class="btn btn-success ms-5">Semua Category</a>
+                </div> -->
             </div>
 
             <div class="card-body">
-                <div class="row ms-5">
+                <!-- <div class="row ms-5">
                     <div class="col-lg-10">
                         <?php
                         $form = ActiveForm::begin([
@@ -67,9 +63,9 @@ use yii\helpers\Url;
                         <?= Html::submitButton('Filter', ['class' => 'btn btn-info', 'name' => 'filter-button']) ?>
                     </div>
                     <?php ActiveForm::end();  ?>
-                </div>
+                </div> -->
                 <div class="table-responsive">
-                    <table class="table table-info text-center">
+                    <table id="basic-datatables" class="display table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th>No.</th>
@@ -77,34 +73,27 @@ use yii\helpers\Url;
                                 <th>Produk Terjual</th>
                             </tr>
                         </thead>
-                        <?php $no = 1;
-                        foreach ($produk as $laporan) {
-                            $terjual = \app\models\Products::find()
-                                ->leftJoin('pesanan_detail', 'pesanan_detail.products_id=products.id')
-                                ->where(['products_id' => $laporan->id])
-                                ->sum('pesanan_detail.jml');
-                            if ($terjual) {
-                                $p = $terjual;
-                            } else {
-                                $p = 0;
-                            }
-                        ?>
-                            <tbody>
+                        <tbody>
+                            <?php $no = 1;
+                            foreach ($produk as $laporan) {
+                                $terjual = \app\models\Products::find()
+                                    ->leftJoin('pesanan_detail', 'pesanan_detail.products_id=products.id')
+                                    ->where(['products_id' => $laporan->id])
+                                    ->sum('pesanan_detail.jml');
+                                if ($terjual) {
+                                    $p = $terjual;
+                                } else {
+                                    $p = 0;
+                                }
+                            ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
                                     <td><?= $laporan->name ?></td>
                                     <td><?= $p ?></td>
                                 </tr>
-                            </tbody>
-                        <?php } ?>
+                            <?php } ?>
+                        </tbody>
                     </table>
-                </div>
-                <div class="pagination d-flex justify-content-center mt-2">
-                    <?php echo \yii\widgets\LinkPager::widget([
-                        'pagination' => $pagination,
-                        'linkContainerOptions' => ['class' => 'page-item'],
-                        'linkOptions' => ['class' => 'page-link'],
-                    ]); ?>
                 </div>
             </div>
         </div>

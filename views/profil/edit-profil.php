@@ -1,158 +1,136 @@
-<hr class="mt-0">
-<div class="container pb-20">
-    <div class="row">
-        <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-            <?= $this->render('sidemenu/profil', [
-                'model' => $model,
-                'identy' => $identy
-            ]) ?>
-        </div>
-        <div class="col-lg-8 col-md-6 col-sm-12 col-12 profile-section">
-            <div class="card mb-5 bg-warning" style="border-radius: 4%">
-                <div class="card-body">
-                    <h3 class="text-isalam-1 font-weight-bold text-detail-program mt-2 mb-4 text-center">Edit Profile</h3>
-                    <?php
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit Profil</h1>
+</div>
 
-                    use yii\bootstrap5\ActiveForm;
-                    use yii\helpers\Html;
-                    use yii\helpers\Url;
+<div class="card shadow mb-4">
+    <div class="card-header py-3 text-center">
+        <h6 class="m-0 font-weight-bold text-primary">Form Edit Profil</h6>
+    </div>
+    <div class="card-body">
+        <?php
 
-                    $form = ActiveForm::begin([
-                        'id' => 'user',
-                        'layout' => 'horizontal',
-                        'enableClientValidation' => true,
-                        'enableClientScript' => false,
-                    ]);
-                    ?>
+        use yii\bootstrap5\ActiveForm;
+        use yii\helpers\Html;
 
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                            <?= $form->field(
-                                $model,
-                                'name',
-                                [
-                                    'template' => '
+        $form = ActiveForm::begin([
+            'id' => 'user',
+            'layout' => 'horizontal',
+            'enableClientValidation' => true,
+            'enableClientScript' => false,
+        ]);
+        ?>
+
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <?= $form->field(
+                    $model,
+                    'name',
+                    [
+                        'template' => '
                                 {label}
                                 {input}
                                 {error}
                             ',
-                                    'inputOptions' => [
-                                        'class' => 'form-control'
-                                    ],
-                                    'labelOptions' => [
-                                        'class' => 'control-label'
-                                    ],
-                                    'options' => ['tag' => false]
-                                ]
-                            )->textInput(['maxlength' => true]) ?>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                            <?= $form->field(
-                                $model,
-                                'email',
-                                [
-                                    'template' => '
+                        'inputOptions' => [
+                            'class' => 'form-control'
+                        ],
+                        'labelOptions' => [
+                            'class' => 'control-label'
+                        ],
+                        'options' => ['tag' => false]
+                    ]
+                )->textInput(['maxlength' => true, 'class' => 'border-dark form-control'])->label('Nama Pengguna', ['class' => 'fw-bold text-dark ms-1']) ?>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <?= $form->field(
+                    $model,
+                    'email',
+                    [
+                        'template' => '
                                 {label}
                                 {input}
                                 {error}
                             ',
-                                    'inputOptions' => [
-                                        'class' => 'form-control'
-                                    ],
-                                    'labelOptions' => [
-                                        'class' => 'control-label'
-                                    ],
-                                    'options' => ['tag' => false]
-                                ]
-                            )->textInput(['maxlength' => true, 'type' => 'email']) ?>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
-                            <?= $form->field(
-                                $model,
-                                'no_hp',
-                                [
-                                    'template' => '
+                        'inputOptions' => [
+                            'class' => 'form-control'
+                        ],
+                        'labelOptions' => [
+                            'class' => 'control-label'
+                        ],
+                        'options' => ['tag' => false]
+                    ]
+                )->textInput(['maxlength' => true, 'type' => 'email', 'class' => 'border-dark form-control'])->label('Email', ['class' => 'fw-bold text-dark ms-1']) ?>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
+                <?= $form->field(
+                    $model,
+                    'no_hp',
+                    [
+                        'template' => '
                                 {label}
                                 {input}
                                 {error}
                             ',
-                                    'inputOptions' => [
-                                        'class' => 'form-control'
-                                    ],
-                                    'labelOptions' => [
-                                        'class' => 'control-label'
-                                    ],
-                                    'options' => ['tag' => false]
-                                ]
-                            )->textInput(['maxlength' => true]) ?>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
-                            <?= $form->field(
-                                $model,
-                                'alamat',
-                                [
-                                    'template' => '
+                        'inputOptions' => [
+                            'class' => 'form-control'
+                        ],
+                        'labelOptions' => [
+                            'class' => 'control-label'
+                        ],
+                        'options' => ['tag' => false]
+                    ]
+                )->textInput(['maxlength' => true, 'type' => 'number', 'class' => 'border-dark form-control'])->label('No.Hp', ['class' => 'fw-bold text-dark ms-1']) ?>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
+                <?= $form->field(
+                    $model,
+                    'alamat',
+                    [
+                        'template' => '
                                 {label}
                                 {input}
                                 {error}
                             ',
-                                    'inputOptions' => [
-                                        'class' => 'form-control'
-                                    ],
-                                    'labelOptions' => [
-                                        'class' => 'control-label'
-                                    ],
-                                    'options' => ['tag' => false]
-                                ]
-                            )->textarea(['rows' => '3']) ?>
-                        </div>
+                        'inputOptions' => [
+                            'class' => 'form-control'
+                        ],
+                        'labelOptions' => [
+                            'class' => 'control-label'
+                        ],
+                        'options' => ['tag' => false]
+                    ]
+                )->textarea(['rows' => '3', 'class' => 'border-dark form-control'])->label('Alamat', ['class' => 'fw-bold text-dark ms-1']) ?>
+            </div>
 
-                        <div class="col-md-12 col-12 mt-3">
-                            <?= $form->field($model, 'img',  [
-                                'template' => '
+            <div class="col-md-12 col-12 mt-3">
+                <?= $form->field($model, 'img',  [
+                    'template' => '
                             {label}
                             {input}
                             {error}
                         ',
-                                'inputOptions' => [
-                                    'class' => 'form-control'
-                                ],
-                                'labelOptions' => [
-                                    'class' => 'control-label'
-                                ],
-                                'options' => ['tag' => false]
-                            ])->fileInput([
-                                'options' => ['accept' => 'image/*'],
-                                'pluginOptions' => [
-                                    'allowedFileExtensions' => ['jpg', 'png', 'jpeg', 'gif', 'bmp'],
-                                    'maxFileSize' => 250,
-                                ],
-                            ]) ?>
-                        </div>
-                    </div>
-                    <?php if ($model->img != null) : ?>
-                        <div class="row">
-                            <div class="col-lg-6 mt-4">
-                                <img src="<?= Url::to(['/upload/' . $model->img]) ?>" alt="" style="width: 350px;height: 250px;border-radius: 5%">
-                            </div>
-                            <div class="col-lg-6 col-md-offset-3 mt-4">
-                                <div style="text-align:center">
-                                    <?= Html::submitButton('<i class="fa fa-save"></i> Simpan', ['class' => 'btn btn-success']); ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php else : ?>
-                        <div class="row">
-                            <div class="col-md-offset-3 col-md-12 mt-4">
-                                <div style="text-align:center">
-                                    <?= Html::submitButton('<i class="fa fa-save"></i> Simpan', ['class' => 'btn btn-success']); ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif ?>
-                    <?php ActiveForm::end(); ?>
-                </div>
+                    'inputOptions' => [
+                        'class' => 'form-control'
+                    ],
+                    'labelOptions' => [
+                        'class' => 'control-label'
+                    ],
+                    'options' => ['tag' => false]
+                ])->fileInput([
+                    'options' => ['accept' => 'image/*'],
+                    'pluginOptions' => [
+                        'allowedFileExtensions' => ['jpg', 'png', 'jpeg', 'gif', 'bmp'],
+                        'maxFileSize' => 250,
+                    ],
+                    'class' => 'border-dark form-control'
+                ])->label('Foto Profil', ['class' => 'fw-bold text-dark ms-1']) ?>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12 mt-4" style="text-align:center">
+                <?= Html::submitButton('<i class="fa fa-save"></i> Simpan', ['class' => 'btn bg-gradient-success text-light']); ?>
+            </div>
+        </div>
+        <?php ActiveForm::end(); ?>
     </div>
 </div>

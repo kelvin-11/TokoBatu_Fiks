@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
-use app\models\PesananDetail;
+use app\models\Category;
+use app\models\Favorit;
 use app\models\Products;
+use app\models\Promo;
 use app\models\search\ProdukSayaSearch;
 use Yii;
 use yii\web\Controller;
@@ -15,6 +17,13 @@ use yii\web\UploadedFile;
 
 class TokoController extends Controller
 {
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+        $this->layout = '@app/views/layouts-profil/main';
+        return parent::beforeAction($action);
+    }
+
     public function actions()
     {
         return [
@@ -28,22 +37,6 @@ class TokoController extends Controller
         ];
     }
 
-    public function actionToko()
-    {
-        if (Yii::$app->user->isGuest) {
-            return $this->redirect('/TokoBatu/web/login/login');
-        }
-
-        $identy = Yii::$app->user->identity;
-        if ($identy->role_id != 3) {
-            return $this->goHome();
-        }
-        $data = Toko::find()->where(['id_user' => yii::$app->user->identity->id])->one();
-
-        return $this->render('sidemenu.toko', [
-            'data' => $data
-        ]);
-    }
     public function actionRegisterToko()
     {
         if (Yii::$app->user->isGuest) {
@@ -83,6 +76,7 @@ class TokoController extends Controller
             if ($model->validate()) {
                 if ($model->save()) {
                     $data->role_id = 3;
+                    $data->updated_at = date('Y-m-d H:i:s');
                     $data->save();
                     $phone_sender = substr_replace($model->no_whatsapp, '62', 0, 1);
                     $pesan_sender = "Salam kak {$data->name}, ini adalah pesan otomatis dari Toko Batu.
@@ -142,17 +136,20 @@ Terimakasih telah menggunakan layanan Toko Batu";
             return $this->goHome();
         }
 
+        $bulan = date('m');
         $data = Toko::find()->where(['id_user' => yii::$app->user->identity->id])->one();
         $produk = Products::find()->where(['toko_id' => $data->id])->count();
 
         $terjual = Products::find()
             ->leftJoin('pesanan_detail', 'pesanan_detail.products_id=products.id')
             ->where(['toko_id' => $data->id])
+            ->andWhere(['like', 'created_at', date("Y-$bulan") . '%', false])
             ->sum('pesanan_detail.jml');
 
         $pendapatan = Products::find()
             ->leftJoin('pesanan_detail', 'pesanan_detail.products_id=products.id')
             ->where(['toko_id' => $data->id])
+            ->andWhere(['like', 'created_at', date("Y-$bulan") . '%', false])
             ->sum('pesanan_detail.total');
 
         // $chart = Yii::$app->db->createCommand("select month(pesanan.created_at) as bulan, sum(pesanan_detail.jml) as jml_pesanan from pesanan 
@@ -188,14 +185,11 @@ Terimakasih telah menggunakan layanan Toko Batu";
 
         $searchModel  = new ProdukSayaSearch();
         $dataProvider = $searchModel->search($_GET);
-        $dataProvider->pagination = ['pageSize' => 3];
-
-        $data = Toko::find()->where(['id_user' => yii::$app->user->identity->id])->one();
+        // $dataProvider->pagination = ['pageSize' => 3];
 
         return $this->render('toko-produk', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
-            'data' => $data,
         ]);
     }
 
@@ -215,7 +209,7 @@ Terimakasih telah menggunakan layanan Toko Batu";
 
         $oldBanner = $model->flag;
         if ($model->load($_POST)) {
-            $model->updated_at = date('y-m-d H:i:s');
+            $model->updated_at = date('Y-m-d H:i:s');
 
             $flag = UploadedFile::getInstance($model, 'flag');
             if ($flag != NULL) {
@@ -368,15 +362,22 @@ Terimakasih telah menggunakan layanan Toko Batu";
 
     public function actionDeleteProduk($id)
     {
-        try {
-            Products::findOne(['id' => $id])->delete();
-        } catch (\Exception $e) {
-            $msg = (isset($e->errorInfo[2])) ? $e->errorInfo[2] : $e->getMessage();
-            \Yii::$app->getSession()->addFlash('error', $msg);
-            return $this->redirect('toko-produk');
+        $favorit = Favorit::find()->where(['products_id' => $id])->all();
+        if ($favorit) {
+            foreach ($favorit as $fv) {
+                $fv->delete();
+            }
         }
 
-        // TODO: improve detection
+        $promo = Promo::find()->where(['products_id' => $id])->all();
+        if ($promo) {
+            foreach ($promo as $pr) {
+                $pr->delete();
+            }
+        }
+
+        Products::findOne(['id' => $id])->delete();
+
         $isPivot = strstr('$id', ',');
         if ($isPivot == true) {
             return $this->redirect(Url::previous());
@@ -392,22 +393,112 @@ Terimakasih telah menggunakan layanan Toko Batu";
         }
     }
 
-    public function actionIndex()
+    public function actionPromo()
     {
-        if (isset($_GET['toko'])) {
-            $toko = $_GET['toko'];
-            $model = Toko::find()->where(['name' => $toko])->one();
-            $coba = Products::find()->where(['toko_id' => $model->id]);
-            $count = $coba->count();
-            $pagination = new Pagination(['totalCount' => $count, 'pageSize' => 20]);
-            $query = $coba->offset($pagination->offset)
-                ->limit($pagination->limit)
-                ->all();
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('/TokoBatu/web/login/login');
         }
-        return $this->render('index', [
-            'pagination' => $pagination,
+
+        $identy = Yii::$app->user->identity;
+        if ($identy->role_id != 3) {
+            return $this->goHome();
+        }
+
+        $toko = Toko::find()->where(['id_user' => Yii::$app->user->identity->id])->one();
+        $model = Promo::find()->where(['toko_id' => $toko->id])->orderBy(['updated_at' => SORT_DESC])->all();
+        $produk = Products::find()->where(['toko_id' => $toko->id])->all();
+
+        return $this->render('promo', [
+            'toko' => $toko,
             'model' => $model,
-            'query' => $query
+            'produk' => $produk
         ]);
+    }
+
+    public function actionBuatPromo()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('/TokoBatu/web/login/login');
+        }
+
+        $identy = Yii::$app->user->identity;
+        if ($identy->role_id != 3) {
+            return $this->goHome();
+        }
+
+        $val = Yii::$app->request->post();
+        $model = new Promo();
+
+        $promo = Promo::find()->where(['products_id' => $val['produk']])->one();
+        if (!$promo) {
+            if ($model) {
+                $model->products_id = $val['produk'];
+                $model->toko_id = $val['toko'];
+                $model->nilai = $val['promo'];
+                $model->date_start = $val['date_start'];
+                $model->date_end = $val['date_end'];
+                $model->created_at = date('Y-m-d H:i:s');
+                $model->updated_at = date('Y-m-d H:i:s');
+                if ($model->validate()) {
+                    $model->save();
+                    Yii::$app->session->setFlash('success', 'Data berhasil dibuat');
+                    return $this->redirect('promo');
+                } else {
+                    Yii::$app->session->setFlash('error', 'Validasi tidak valid, dimohon untuk membuat ulang data!');
+                    return $this->redirect('promo');
+                }
+            }
+        } else {
+            Yii::$app->session->setFlash('error', 'Promo Produk Sudah Pernah Dibuat');
+            return $this->redirect('promo');
+        }
+    }
+
+    public function actionProduk()
+    {
+        $produk = Products::find()->where(['id' => $_POST['id_produk']])->one();
+        echo $produk->harga;
+    }
+
+    public function actionUpdatePromo()
+    {
+        $val = Yii::$app->request->post();
+        $model = Promo::findOne(['id' => $val['id']]);
+
+        if ($model) {
+            $model->products_id = $val['produk'];
+            $model->toko_id = $val['toko'];
+            $model->nilai = $val['promo'];
+            $model->date_start = $val['date_start'];
+            $model->date_end = $val['date_end'];
+            $model->updated_at = date('Y-m-d H:i:s');
+            if ($model->validate()) {
+                $model->save();
+                Yii::$app->session->setFlash('success', 'Data berhasil dirubah');
+                return $this->redirect('promo');
+            } else {
+                Yii::$app->session->setFlash('error', 'Validasi tidak valid, dimohon untuk membuat ulang data!');
+                return $this->redirect('promo');
+            }
+        }
+    }
+
+    public function actionDeletePromo($id)
+    {
+        Promo::findOne(['id' => $id])->delete();
+
+        $isPivot = strstr('$id', ',');
+        if ($isPivot == true) {
+            return $this->redirect(Url::previous());
+        } elseif (isset(\Yii::$app->session['__crudReturnUrl']) && \Yii::$app->session['__crudReturnUrl'] != '/') {
+            Url::remember(null);
+            $url = \Yii::$app->session['__crudReturnUrl'];
+            \Yii::$app->session['__crudReturnUrl'] = null;
+
+            return $this->redirect($url);
+        } else {
+            Yii::$app->session->setFlash('success', 'Data berhasil di hapus');
+            return $this->redirect(['promo']);
+        }
     }
 }

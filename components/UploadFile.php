@@ -101,12 +101,13 @@ trait UploadFile
 
     public static function uploadFile($file, $uploadTo = "random")
     {
-        $realpath_dir = Yii::getAlias("@webroot/uploads/{$uploadTo}/");
+        $realpath_dir = Yii::getAlias("@webroot/upload/{$uploadTo}/");
         if (file_exists($realpath_dir) == false) {
             mkdir($realpath_dir, 0777, true);
         }
 
-        $ext = end(explode(".", $file->name));
+        // $ext = end(explode(".", $file->name));
+        $ext = explode(".", $file->name)[1];
         $namaFile = sha1(rand(0, 9999)) . ".{$ext}";
 
         $file->saveAs("{$realpath_dir}/{$namaFile}");

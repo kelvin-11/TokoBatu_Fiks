@@ -1,99 +1,95 @@
-<?php
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+</div>
 
-?>
-<?php if (Yii::$app->session->hasFlash('success')) : ?>
-    <div class="alert alert-success alert-dismissable">
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-        <p><i class="icon fa fa-check"></i>Saved!</p>
-        <?= Yii::$app->session->getFlash('success') ?>
-    </div>
-<?php endif; ?>
-<?php if (Yii::$app->session->hasFlash('error')) : ?>
-    <div class="alert alert-danger alert-dismissable">
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-        <h4><i class="icon fa fa-close"></i>Not Saved!</h4>
-        <?= Yii::$app->session->getFlash('error') ?>
-    </div>
-<?php endif; ?>
-<div class="site-index">
-    <section class="hero">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-                    <?= $this->render('sidemenu/profil', [
-                        'model' => $model,
-                        'identy' => $identy
-                    ]);
-                    ?>
-                </div>
-                <div class="col-lg-8 col-md-6 col-sm-12 col-12 profile-section">
-                    <h3 class="text-isalam-1 font-weight-bold text-detail-program"></h3>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="card bg-warning">
-                                <div class="card-body text-center">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <?php if ($pesanan != null) : ?>
-                                                <h4 class="fw-bold"><?= $keranjang ?></h4>
-                                            <?php else : ?>
-                                                <h4 class="fw-bold">0</h4>
-                                            <?php endif ?>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <h4 class="fw-bold">Produk</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="ms-5 mb-4">Di Keranjang Anda</h6>
-                            </div>
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Pesanan
                         </div>
-                        <div class="col-lg-6">
-                            <div class="card bg-warning">
-                                <div class="card-body text-center">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <h4 class="fw-bold"><?= $history ?></h4>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <h4 class="fw-bold">Pesanan</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="ms-5 mb-4">Di History Pembelian Anda</h6>
-                            </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <?php if ($pesanan != null) : ?>
+                                <?= number_format($keranjang) ?>
+                            <?php else : ?>
+                                0
+                            <?php endif ?>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card mt-5 bg-warning">
-                                <div class="card-body">
-                                    <h3 class="fw-bold">Pemesanan :</h3>
-                                    <hr style="border-color: black;">
-                                    <div class="row">
-                                        <div class="col-lg-10">
-                                            <h5>Pesanan berhasil</h5>
-                                            <h5 class="mt-4">Pesanan diorder</h5>
-                                            <h5 class="mt-4">Pesanan dikonfirmasi</h5>
-                                            <h5 class="mt-4">Pesanan dalam perjalanan</h5>
-                                            <h5 class="mt-4">Pesanan gagal</h5>
-                                            <h5 class="mt-4">Total pesanan</h5>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <h5><?= $berhasil ?></h5>
-                                            <h5 class="mt-4"><?= $pending ?></h5>
-                                            <h5 class="mt-4"><?= $dikonfirmasi ?></h5>
-                                            <h5 class="mt-4"><?= $dalamperjalanan ?></h5>
-                                            <h5 class="mt-4"><?= $gagal ?></h5>
-                                            <h5 class="mt-4"><?= $history + $pending ?></h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Riwayat
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($history) ?></div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Favorit
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($favorit) ?></div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-heart fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-6 col-lg-7">
+        <!-- Area Chart -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">Area Chart Riwayat</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="AreaChartRiwayat"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <!-- Pie Chart -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">Pie Chart</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-bar">
+                    <canvas id="myPieChartProfil"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
