@@ -20,8 +20,17 @@ use yii\widgets\ActiveForm;
                     'allowedFileExtensions' => ['jpg', 'png', 'jpeg', 'gif', 'bmp', 'jfif'],
                     'maxFileSize' => 250,
                 ],
-                'class' => 'form-control border-dark'
+                'class' => 'form-control border-dark',
             ])->label('Banner', ['class' => 'fw-bold text-dark ms-1']) ?>
+        </div>
+
+        <div class="col-lg-6">
+            <?= $form->field($model, 'date_start')->textInput(['maxlength' => true, 'type' => 'date', 'class' => 'form-control border-dark', 'required' => true, 'value' => $model->date_start ? date('Y-m-d', strtotime($model->date_start)) : ''])
+                ->label('Tanggal Mulai', ['class' => 'fw-bold text-dark ms-1']) ?>
+        </div>
+        <div class="col-lg-6">
+            <?= $form->field($model, 'date_end')->textInput(['maxlength' => true, 'type' => 'date', 'class' => 'form-control border-dark', 'required' => true, 'value' => $model->date_end ? date('Y-m-d', strtotime($model->date_end)) : ''])
+                ->label('Tanggal Selesai', ['class' => 'fw-bold text-dark ms-1']) ?>
         </div>
     </div>
 

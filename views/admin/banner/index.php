@@ -37,7 +37,8 @@
                             <tr class="text-center">
                                 <th>No.</th>
                                 <th>Gambar</th>
-                                <th>Tanggal</th>
+                                <th>Tanggal Mulai</th>
+                                <th>Tanggal Selesai</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -49,7 +50,8 @@
                                     <td>
                                         <img src="<?= yii\helpers\Url::to(['/upload/' . $banner->image]) ?>" alt="" style="width: 80px;height: 80px">
                                     </td>
-                                    <td><?= date('d M Y', strtotime($banner->created_at)) ?></td>
+                                    <td><?= date('d M Y', strtotime($banner->date_start)) ?></td>
+                                    <td><?= date('d M Y', strtotime($banner->date_end)) ?></td>
                                     <td class="text-center">
                                         <a class="btn bg-primary-gradient text-light" href="<?= yii\helpers\Url::to(['update-banner', 'id' => $banner->id]) ?>">
                                             <i class="fas fa-edit"></i>

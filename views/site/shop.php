@@ -25,16 +25,21 @@ use yii\helpers\Url;
                         <div class="latest-product__text">
                             <h4>TERBARU</h4>
                             <div class="latest-product__slider owl-carousel">
-                                <?php foreach ($lates as $l) { ?>
+                                <?php foreach ($lates as $l) {
+                                    $promo = app\models\Promo::find()->where(['products_id' => $l->id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+                                ?>
                                     <div class="latest-prdouct__slider__item">
                                         <a href="<?= \yii\helpers\Url::to(['/site/detail', 'id' => $l->id]) ?>" class="latest-product__item">
                                             <div class="latest-product__item__pic">
                                                 <img src="<?= Url::to(['/upload/' . $l->img]) ?>" alt="" style="width: 110px;">
                                             </div>
                                             <div class="latest-product__item__text">
-                                                <h5 class="fw-bold"><?= $l->name ?></h4 class="fw-bold">
-                                                </h5>
-                                                <h6 class="py-2 mt-1">Rp. <?= number_format($l->harga) ?></h6>
+                                                <h5 class="fw-bold"><?= $l->name ?></h5>
+                                                <?php if ($promo) : ?>
+                                                    <h6 class="py-2 mt-1">Rp. <?= number_format($l->harga - $promo->nilai) ?></h6>
+                                                <?php else : ?>
+                                                    <h6 class="py-2 mt-1">Rp. <?= number_format($l->harga) ?></h6>
+                                                <?php endif ?>
                                             </div>
                                         </a>
                                     </div>

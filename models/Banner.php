@@ -13,6 +13,33 @@ use Yii;
  */
 class Banner extends \yii\db\ActiveRecord
 {
+    public function fields()
+    {
+        $parent = parent::fields();
+       
+        if (isset($parent['image'])) {
+            $parent['image'] = function ($model) {
+                return $this->getImageUrl($model->image);
+            };
+        }
+        return $parent;
+    }
+    public function getImageUrl($link)
+    {
+        $link = Yii::getAlias("@web/upload/" . $link);
+
+        // check file exists
+        if (
+            file_exists($link)
+            && !is_dir($link)
+        ) {
+            return $link;
+        }
+
+        // default image
+        return $link;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -27,8 +54,8 @@ class Banner extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['image', 'created_at'], 'required'],
-            [['created_at'], 'safe'],
+            [['image', 'created_at','date_start','date_end'], 'required'],
+            [['created_at','date_start','date_end'], 'safe'],
             [['image'], 'string', 'max' => 50],
         ];
     }
@@ -41,6 +68,8 @@ class Banner extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'image' => 'Image',
+            'date_start' => 'Date Start',
+            'date_end' => 'Date End',
             'created_at' => 'Created At',
         ];
     }

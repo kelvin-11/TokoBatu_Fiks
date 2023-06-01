@@ -69,7 +69,7 @@ if (Yii::$app->user->identity) {
                 </ul>
             </li> -->
             <li><a href="<?= \yii\helpers\Url::to(['/site/about']) ?>">About</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="<?= \yii\helpers\Url::to(['/site/contact']) ?>">Contact</a></li>
         </ul>
     </nav>
     <div id="mobile-menu-wrap"></div>
@@ -111,7 +111,7 @@ if (Yii::$app->user->identity) {
                                 </ul>
                             </li> -->
                         <li><a href="<?= \yii\helpers\Url::to(['/site/about']) ?>">About</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="<?= \yii\helpers\Url::to(['/site/contact']) ?>">Contact</a></li>
                     </ul>
                 </nav>
             </div>

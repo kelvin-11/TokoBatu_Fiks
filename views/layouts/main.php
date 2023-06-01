@@ -19,9 +19,9 @@ AppAsset::register($this);
 
 <body onload=getDataPenjualan()>
     <?php $this->beginBody() ?>
-    <!-- <div id="preloder">
+    <div id="preloder">
         <div class="loader"></div>
-    </div> -->
+    </div>
 
     <?= $this->render('header') ?>
 

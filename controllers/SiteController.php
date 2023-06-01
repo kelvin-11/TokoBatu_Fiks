@@ -78,8 +78,8 @@ class SiteController extends Controller
     {
         $categories = Category::find()->all();
         $lates = Products::find()->orderBy(['id' => SORT_DESC])->limit(4)->all();
-        $banners = Banner::find()->all();
-        $bannerCount = Banner::find()->count();
+        $banners = Banner::find()->where(['>=', 'date_end', date('Y-m-d')])->all();
+        $bannerCount = Banner::find()->where(['>=', 'date_end', date('Y-m-d')])->count();
 
         // $items = Products::find()->with('category');
         // if (isset($_GET['Item'])) {
@@ -746,22 +746,9 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
 
     public function actionContact()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
+        return $this->render('contact');
     }
 
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
     public function actionAbout()
     {
         return $this->render('about');

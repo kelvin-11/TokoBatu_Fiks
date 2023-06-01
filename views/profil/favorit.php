@@ -34,7 +34,9 @@
 </div>
 
 <div class="row">
-    <?php foreach ($favorit as $item) { ?>
+    <?php foreach ($favorit as $item) {
+        $promo = app\models\Promo::find()->where(['products_id' => $item->products->id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
+    ?>
         <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
             <div class="card shadow mb-4">
                 <img src="<?= yii\helpers\Url::to(['/upload/' . $item->products->img]) ?>" class="card-img-top" alt="">
@@ -45,7 +47,11 @@
                             <p class="tx-content"><?= $item->products->category->name ?></p>
                         </div>
                         <div class="col-lg-6">
-                            <p class="tx-content">Rp. <?= number_format($item->products->harga) ?></p>
+                            <?php if ($promo) : ?>
+                                <p class="tx-content">Rp. <?= number_format($item->products->harga - $promo->nilai) ?></p>
+                            <?php else : ?>
+                                <p class="tx-content">Rp. <?= number_format($item->products->harga) ?></p>
+                            <?php endif ?>
                         </div>
 
                         <form action="<?= Yii::$app->request->baseUrl . "/site/create-keranjang" ?>" method="post" id="keranjang<?= $item->products->id ?>">

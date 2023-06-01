@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 24, 2023 at 04:40 AM
+-- Generation Time: May 26, 2023 at 08:09 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 7.4.33
 
@@ -30,6 +30,8 @@ SET time_zone = "+00:00";
 CREATE TABLE `banner` (
   `id` int(11) NOT NULL,
   `image` varchar(50) NOT NULL,
+  `date_start` datetime NOT NULL,
+  `date_end` datetime NOT NULL,
   `created_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -37,8 +39,9 @@ CREATE TABLE `banner` (
 -- Dumping data for table `banner`
 --
 
-INSERT INTO `banner` (`id`, `image`, `created_at`) VALUES
-(1, 'oIC9pWnx5Q6sP94yznOJ5L81bsBIdLMv.png', '2023-05-15 14:24:25');
+INSERT INTO `banner` (`id`, `image`, `date_start`, `date_end`, `created_at`) VALUES
+(6, 'Y2FjnxqHF1Upyxbg4mFEpZ4dnf8ykCZw.jpg', '2023-05-26 00:00:00', '2023-05-25 00:00:00', '2023-05-26 08:35:57'),
+(8, 'Yx3rSuZRRyAOyXXdZC1bNfx7PUgds-by.jpg', '2023-05-26 00:00:00', '2023-05-25 00:00:00', '2023-05-26 09:01:22');
 
 -- --------------------------------------------------------
 
@@ -103,6 +106,14 @@ CREATE TABLE `favorit` (
   `created_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `favorit`
+--
+
+INSERT INTO `favorit` (`id`, `user_id`, `products_id`, `created_at`) VALUES
+(14, 23, 68, '2023-05-25 08:13:40'),
+(15, 23, 69, '2023-05-25 13:30:18');
+
 -- --------------------------------------------------------
 
 --
@@ -148,6 +159,15 @@ CREATE TABLE `pesanan` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+--
+-- Dumping data for table `pesanan`
+--
+
+INSERT INTO `pesanan` (`id`, `user_id`, `jasa_id`, `status`, `kode_unik`, `total_harga`, `paket`, `ongkir`, `estimasi`, `status_pemesanan`, `code_transaksi_midtrans`, `created_at`, `updated_at`) VALUES
+(47, 23, 14, 1, 11829, 15000, 'ECO', 20000, '4', 'dikonfirmasi', '8f00e202-a52f-4db7-8868-c5e1ce72979b', '2023-05-25 13:11:06', '2023-05-25 13:11:06'),
+(48, 23, NULL, 0, 73752, 7000, NULL, NULL, NULL, 'pending', NULL, '2023-05-25 14:59:36', '2023-05-25 14:59:36'),
+(49, 26, 1, 1, 30034, 111000, 'OKE Rp. 29000', 29000, '7-8', 'dikonfirmasi', '6d45ff01-3bc8-4160-a1fb-d10d7453cc27', '2023-05-25 21:57:41', '2023-05-25 21:57:41');
+
 -- --------------------------------------------------------
 
 --
@@ -162,6 +182,17 @@ CREATE TABLE `pesanan_detail` (
   `total` int(11) NOT NULL,
   `created_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `pesanan_detail`
+--
+
+INSERT INTO `pesanan_detail` (`id`, `products_id`, `pesanan_id`, `jml`, `total`, `created_at`) VALUES
+(119, 52, 47, 1, 10000, '2023-05-25 13:11:06'),
+(120, 68, 47, 1, 5000, '2023-05-25 13:11:06'),
+(121, 68, 48, 1, 7000, NULL),
+(122, 69, 49, 18, 90000, NULL),
+(123, 68, 49, 3, 21000, NULL);
 
 -- --------------------------------------------------------
 
@@ -187,18 +218,15 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `user_id`, `category_id`, `toko_id`, `img`, `harga`, `stok`, `deskripsi_produk`, `berat`) VALUES
-(52, 'Mie Surga', 23, 28, 61, '', 10000, 1000, 'Mie dengan kualitas terbaik dari mie pedas Orins tanpa Lombok. Lengkap dengan toping ayam, sayur, Daging dan Krupuk. Bagi yg suka Kecap bisa ditambah.', '400'),
-(53, 'Mie Jahannam', 23, 28, 61, '', 10000, 1000, 'Mie pedas Jahannam. Mie dengan kepedasan level lengkap dengan toping ayam, daging, sayur, kerupuk. Level S = 12. Level M = 24. Level L = 48. Bisa juga request lombok 1-10.', '400'),
-(54, 'Mie Neraka', 23, 28, 61, '', 10000, 1000, 'Mie Neraka. Mie dengan level dan tambahan kecap lengkap dengan Toping ayam, daging, sayur, krupuk. Level S = 12. Level M =24. Level L = 48. Bisa request lombok 1 - 10', '400'),
-(55, 'Ice blended coklat 350ml', 23, 28, 61, '', 6000, 1000, 'ice blend coklat yg lezat', '250'),
-(56, 'Ice blended green tea 350ml', 23, 28, 61, '', 6000, 1000, 'lorem ipsum', '250'),
-(57, 'Ice blended Taro 350ml', 23, 28, 61, '', 6000, 1000, 'lorem ipsum\r\n', '250'),
-(58, 'Ice Tea', 23, 28, 61, '', 3000, 1000, 'lorem ipsum', '150'),
-(59, 'Rengginang Cumi Pedas', 23, 28, 61, '', 25000, 1000, 'Rengginang asli dari tinta cumi bukan pewarna makanan. Tanpa jemur', '500'),
-(60, 'Rengginang Cumi Ori', 23, 28, 61, '', 23000, 1000, 'lorem ipsum', '450'),
-(66, 'Buku Mainan', 23, 20, 61, '', 18000, 1000, 'lorem ipsum\r\n', '400'),
-(67, 'Sempol KWB', 23, 28, 61, '', 20000, 1000, 'lorem ipsum', '300'),
-(68, 'Keripik Kentang', 23, 28, 61, '', 7000, 1000, 'lorem ipsum', '200'),
+(52, 'Mie Surga', 23, 28, 61, 'htp4SgFMQOPSAPUNTuWzTMT2s5P4JLRL.jpg', 10000, 999, 'Mie dengan kualitas terbaik dari mie pedas Orins tanpa Lombok. Lengkap dengan toping ayam, sayur, Daging dan Krupuk. Bagi yg suka Kecap bisa ditambah.', '400'),
+(54, 'Mie Neraka', 23, 28, 61, 'dYNpHNCz1pPl6Zva3-9N8J1KV9ppuzpi.jpg', 10000, 1000, 'Mie Neraka. Mie dengan level dan tambahan kecap lengkap dengan Toping ayam, daging, sayur, krupuk. Level S = 12. Level M =24. Level L = 48. Bisa request lombok 1 - 10', '400'),
+(55, 'Ice blended coklat', 23, 28, 61, 'sLcJKZ_b0qBl16PH1EYyVvHDAlprDEEW.jpg', 6000, 1000, 'ice blend coklat yg lezat', '250'),
+(57, 'Ice blended Taro', 23, 28, 61, '9YEJe9qVnX_HfSHar5kQN-CxrOPumon7.jpg', 6000, 1000, 'lorem ipsum\r\n', '250'),
+(59, 'Renginang Cumi Pedas', 23, 28, 61, 'o6obxrQ6Gc-CiOcbjAOR-xMKV3-FKDYX.jfif', 25000, 1000, 'Rengginang asli dari tinta cumi bukan pewarna makanan. Tanpa jemur', '500'),
+(60, 'Renginang Cumi Ori', 23, 28, 61, 'qba34Jgfq_rk34lsjGOvdnpJRsmELIwQ.jpg', 23000, 1000, 'lorem ipsum', '450'),
+(66, 'Buku Mainan', 23, 20, 61, '57x5mZvnWsyKBsRXnvB6NWE9rbWqp2Dh.jpg', 18000, 1000, 'lorem ipsum\r\n', '400'),
+(67, 'Sempol KWB', 23, 28, 61, 'XeaFdeASxXNLfDqd0wePRa7M1UJ8s7Jb.jpg', 20000, 1000, 'lorem ipsum', '300'),
+(68, 'Keripik Kentang', 23, 28, 61, 'E3vb9tdISzjtj60YH11tvErS7ohp8VT8.jpg', 7000, 996, 'lorem ipsum', '200'),
 (69, 'Buku Tulis', 23, 20, 61, '4v5okGL06CfkyLCG-mWYz-TFjBkLmdy8.jpg', 5000, 1000, 'lorem ipsum', '230');
 
 -- --------------------------------------------------------
@@ -217,6 +245,15 @@ CREATE TABLE `promo` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `promo`
+--
+
+INSERT INTO `promo` (`id`, `products_id`, `toko_id`, `nilai`, `date_start`, `date_end`, `created_at`, `updated_at`) VALUES
+(12, 68, 61, 2000, '2023-05-25 00:00:00', '2023-08-01 00:00:00', '2023-05-25 08:07:52', '2023-05-25 08:07:52'),
+(13, 67, 61, 3000, '2023-05-25 00:00:00', '2023-08-01 00:00:00', '2023-05-25 08:08:18', '2023-05-25 08:08:18'),
+(14, 69, 61, 1000, '2023-05-25 00:00:00', '2023-05-31 00:00:00', '2023-05-25 08:09:23', '2023-05-25 08:09:23');
 
 -- --------------------------------------------------------
 
@@ -296,8 +333,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `name`, `email`, `password`, `alamat`, `kota`, `provinsi`, `type`, `no_hp`, `codepos`, `status`, `role_id`, `img`, `secret_token`, `refresh_token`, `created_at`, `updated_at`) VALUES
 (19, 'admin', 'admin@gmail.com', '$2y$13$8Gubjltl.f4T4LtXVwcGDONP3qNjYQsognz.RSZOa69GFhAticLmS', NULL, NULL, NULL, NULL, NULL, NULL, 10, 2, NULL, NULL, NULL, NULL, NULL),
-(23, 'Kelvin Rohmat Setiaji', 'kv@gmail.com', '$2y$13$LkPSvHrU1NRoVLvs1Vs2/.lFvcS03IoyNJrtB/jSvkqbe1tzKmm4a', 'Jl. Mawar Putih,No.51', 'Kabupaten Ponorogo', 'Jawa Timur', 'Kabupaten', '085708217852', 63411, 10, 3, 'wKtC1QIjCVFmRQGk_tpMIf74tvnLIlXJ.jpg', 'TOKOBATUMTY4NDMrdi1HZFBvRmg3aFFmcDcxUUt0MW_9jrq0_9hMnhJQWt6NVR3b3BDeG5VQSsxMzc2MA==S3CRETKEY', 'sID7NMqJMo_o_tRKhvatb_c8Fy8Tdfvr', '2023-01-21 16:36:38', '2023-05-22 10:57:47'),
-(26, 'Customer', 'customer@gmail.com', '$2y$13$uzC.AqtN04sFYcPsbPe6hOT6d4pqW5sO7IEhjwyi/gEpuwU7lGRbi', 'Jl. Mawar Putih,No.55', 'Kabupaten Ponorogo', 'Jawa Timur', 'Kabupaten', '082333444554', 63411, 10, 1, 'X0DbpVnSOjFJhxwfSU91Yszlo88qH81c.jpg', 'TOKOBATUMTY3OTYrancxU09pK2h5Wk8wOGdReE_FY6bP_huVk9NMW5ndHI1WHBsb2YrNDA3OTI=S3CRETKEY', 'zuIzT9pvY-ES2_7ZxYTyhQhs3ejZqBmK', '2023-01-23 15:27:34', '2023-05-19 08:56:08'),
+(23, 'Kelvin Rohmat Setiaji', 'kv@gmail.com', '$2y$13$LkPSvHrU1NRoVLvs1Vs2/.lFvcS03IoyNJrtB/jSvkqbe1tzKmm4a', 'Jl. Mawar Putih,No.51', 'Kabupaten Ponorogo', 'Jawa Timur', 'Kabupaten', '085708217852', 63411, 10, 3, 'wKtC1QIjCVFmRQGk_tpMIf74tvnLIlXJ.jpg', 'TOKOBATUMTY4NTArRzFIbEVaRDZKeFpxSm52S3ZqMHhBYW_Wp9yU_pqZFZBQTlxSXoyZTZ0eTdLb1ZMLVIrOTExNTQ=S3CRETKEY', 'PPa2NWEDNMus7XRs-6Ar1LiHoLe0mFSI', '2023-01-21 16:36:38', '2023-05-26 10:52:33'),
+(26, 'Customer', 'customer@gmail.com', '$2y$13$uzC.AqtN04sFYcPsbPe6hOT6d4pqW5sO7IEhjwyi/gEpuwU7lGRbi', 'Jl. Mawar Putih,No.55', 'Bangli', 'Bali', 'Kabupaten', '082333444554', 80619, 10, 1, 'X0DbpVnSOjFJhxwfSU91Yszlo88qH81c.jpg', 'TOKOBATUMTY4NTArMDR0Q1dGdERZY0RFR2R1QXZRdllua1dOVE_W2SsM_MyczdqNG50ZkVsVXUxZU5LU2grMzRxZGcrNDUyNTA=S3CRETKEY', 'h6oZ3cTdg2yeFsFLrZClEpegtaQOuHBA', '2023-01-23 15:27:34', '2023-05-25 22:08:30'),
 (38, 'Customer1', 'customer1@gmail.com', '$2y$13$Km6BvU4qJZBXks/9uw2kCeSxT/bRtAb/aSoSGy66pv192Q.POkmHa', 'Jl. MawarPutih Semarang No.55', 'Kota Bogor', 'Jawa Barat', 'Kota', '089988999897', 16119, 10, 3, NULL, 'TOKOBATUMTY4NDQrNk1wQktvbmpHQmt6aDJYQVVoTjhzZ3_QzeJD_BGUENBMG5jNHFBYTdvaXNoZGxrMCs5NDA2Mw==S3CRETKEY', 'lf3TCQDt96pcRaEPopOwxoG2YuZseHUp', '2023-05-19 09:48:00', '2023-05-19 14:26:58'),
 (40, 'Customer2', 'customer2@gmail.com', '$2y$13$jmh5TWW9908hr7dBJzwqquMqL5LusSuf9mKLbiM.ttCZ6gHC.KU7K', NULL, NULL, NULL, NULL, NULL, NULL, 10, 1, NULL, 'TOKOBATUMTY4NDQrUVU2a0dIb3JubmF0VjhkOGxj_r-B7B_M3JLcTN3cTFxWnJ3Tll4Uk8rOTU5OTI=S3CRETKEY', 'BGA8CqstF9HJ05dkJFKA_VZriXxXi5Pe', '2023-05-19 10:43:53', '2023-05-19 13:33:11');
 
@@ -392,7 +429,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `banner`
 --
 ALTER TABLE `banner`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -404,7 +441,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `favorit`
 --
 ALTER TABLE `favorit`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `jasa_kirim`
@@ -416,13 +453,13 @@ ALTER TABLE `jasa_kirim`
 -- AUTO_INCREMENT for table `pesanan`
 --
 ALTER TABLE `pesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `pesanan_detail`
 --
 ALTER TABLE `pesanan_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -434,7 +471,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `promo`
 --
 ALTER TABLE `promo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `role`

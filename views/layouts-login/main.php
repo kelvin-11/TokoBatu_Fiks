@@ -10,29 +10,40 @@ LoginAsset::register($this);
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= yii::$app->name ?></title>
     <?php $this->head() ?>
-    <style>
-        .bg-container {
+    <!-- <style>
+        body {
             background: linear-gradient(9deg, rgba(0, 112, 255, 1) 0%, rgba(124, 207, 0, 1.0) 100%);
             /* background:  rgba(124, 207, 0, 1.0) 100%; */
         }
-    </style>
+    </style> -->
 </head>
 
-<body class="bg-container">
+<body>
     <?php $this->beginBody() ?>
-    <div class="container">
-        <?= $content ?>
-    </div>
-    </div>
+    <!-- <div class="container"> -->
+    <?= $content ?>
+    <!-- </div> -->
     <?php $this->endBody() ?>
 </body>
 
 <script>
+    <?php if (Yii::$app->session->hasFlash('success')) : ?>
+        Toastify({
+            text: "<?= Yii::$app->session->getFlash('success') ?>",
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "#7fad39",
+            },
+            onClick: function() {}
+        }).showToast();
+    <?php endif ?>
     <?php if (Yii::$app->session->hasFlash('error')) : ?>
         Toastify({
             text: "<?= Yii::$app->session->getFlash('error') ?>",

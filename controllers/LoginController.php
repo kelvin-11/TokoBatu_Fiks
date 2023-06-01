@@ -84,7 +84,7 @@ class LoginController extends Controller
                 //     ->setTextBody('Plain text content')
                 //     ->send();
                 $model->save();
-                Yii::$app->session->setFlash('success', 'Berhasil Register..Silahkan Login!');
+                Yii::$app->session->setFlash('success', 'Silahkan Login Untuk Melanjutkan!');
                 return $this->redirect(['login']);
             } else {
                 Yii::$app->session->setFlash('error', 'Gagal Register..!');
