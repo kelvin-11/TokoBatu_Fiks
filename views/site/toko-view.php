@@ -17,7 +17,27 @@ use yii\helpers\Url;
         left: 20px;
         top: 20px;
     }
+
+    #profil {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 8px;
+        background: linear-gradient(135deg, red, blue 50%, transparent 50%);
+        background-size: 250%;
+        background-position: 100% 100%;
+        transition: background 0.5s;
+    }
+
+    #profil:hover {
+        background-position: 0% 0%;
+    }
 </style>
+
 <section class="hero hero-normal">
     <div class="container">
         <div class="row">
@@ -30,7 +50,11 @@ use yii\helpers\Url;
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-lg-4">
-                                                <img src="<?= \Yii::$app->request->BaseUrl . "/upload/" . $model->flag ?>" alt="" style="width: 80px;height: 80px;border-radius: 50%" class="ms-2 border border-secondary">
+                                                <?php if ($model->flag) : ?>
+                                                    <img src="<?= \Yii::$app->request->BaseUrl . "/upload/" . $model->toko->flag ?>" alt="" id="profil" class="ms-1">
+                                                <?php else : ?>
+                                                    <img src="https://i.pinimg.com/736x/d9/7b/bb/d97bbb08017ac2309307f0822e63d082.jpg" alt="" id="profil" class="ms-1">
+                                                <?php endif ?>
                                             </div>
                                             <div class="col-lg-8">
                                                 <h5 class="fw-bold text-light mt-1"><b><?= $model->name ?></b></h5>

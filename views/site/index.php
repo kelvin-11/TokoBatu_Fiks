@@ -56,6 +56,7 @@
             </div>
         </div>
     </section>
+    
     <!-- Categories Section Begin -->
     <section class="categories">
         <div class="container">

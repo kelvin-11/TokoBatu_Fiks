@@ -21,7 +21,8 @@ class AppAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        'css/site.css',
+        // 'css/site.css',
+        "css/footer-home.css",
 
         //ogani-master
         "ogani-master/css/bootstrap.min.css",

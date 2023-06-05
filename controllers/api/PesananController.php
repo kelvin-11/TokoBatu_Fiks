@@ -243,8 +243,10 @@ class PesananController extends \yii\rest\ActiveController
                 $pesanan_detail = PesananDetail::find()->where(['pesanan_id' => $pesanan->id])->all();
                 if ($pesanan_detail) {
                     foreach ($pesanan_detail as $pd) {
+                        $pd->created_at = date('Y-m-d H:i:s');
                         $produk = Products::find()->where(['id' => $pd->products_id])->one();
                         $produk->stok = $produk->stok - $pd->jml;
+                        $pd->update();
                         $produk->update();
                     }
                 } else {
@@ -403,7 +405,7 @@ Pesan ini tidak perlu dibalas dan bukan nomor pemesanan order";
             ];
         }
     }
-    
+
     public function actionDetails($id)
     {
         $data = $this->modelClass::find()->where(['id' => $id])->all();

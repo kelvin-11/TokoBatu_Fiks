@@ -17,7 +17,27 @@ use yii\helpers\Url;
         left: 20px;
         top: 20px;
     }
+
+    #profil {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 8px;
+        background: linear-gradient(135deg, red, blue 50%, transparent 50%);
+        background-size: 250%;
+        background-position: 100% 100%;
+        transition: background 0.5s;
+    }
+
+    #profil:hover {
+        background-position: 0% 0%;
+    }
 </style>
+
 <!-- Breadcrumb Section Begin -->
 <div class="container">
     <div class="row">
@@ -108,13 +128,18 @@ use yii\helpers\Url;
                 </ul>
             </div>
         </div>
+
         <?php if ($model->toko_id != null) { ?>
             <div class="col-lg-12">
                 <div class="card mt-3" style="background-color: #7fad39;">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-2" style="text-align: center;">
-                                <img src="<?= \Yii::$app->request->BaseUrl . "/upload/" . $model->toko->flag ?>" alt="" style="width: 100px;height: 100px;border-radius: 50%" class="ms-4">
+                                <?php if ($model->toko->flag) : ?>
+                                    <img src="<?= \Yii::$app->request->BaseUrl . "/upload/" . $model->toko->flag ?>" alt="" id="profil">
+                                <?php else : ?>
+                                    <img src="https://i.pinimg.com/736x/d9/7b/bb/d97bbb08017ac2309307f0822e63d082.jpg" alt="" id="profil">
+                                <?php endif ?>
                             </div>
                             <div class="col-lg-3" style="text-align: center;">
                                 <h5 class="text-light"><b><?= $model->toko->name ?></b></h5>
