@@ -8,7 +8,6 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-use app\models\ContactForm;
 use app\models\Favorit;
 use app\models\JasaKirim;
 use app\models\Pesanan;
@@ -79,7 +78,6 @@ class SiteController extends Controller
         $categories = Category::find()->all();
         $lates = Products::find()->orderBy(['id' => SORT_DESC])->limit(4)->all();
         $banners = Banner::find()->where(['>=', 'date_end', date('Y-m-d')])->all();
-        $bannerCount = Banner::find()->where(['>=', 'date_end', date('Y-m-d')])->count();
 
         // $items = Products::find()->with('category');
         // if (isset($_GET['Item'])) {
@@ -107,7 +105,6 @@ class SiteController extends Controller
             'categories' => $categories,
             'lates' => $lates,
             'banners' => $banners,
-            'bannerCount' => $bannerCount,
         ]);
     }
 

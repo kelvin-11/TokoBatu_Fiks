@@ -18,7 +18,7 @@ use yii\helpers\Url;
         top: 20px;
     }
 </style>
-<div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat item">
+<div class="col-lg-3 col-md-6 col-sm-6 mix oranges fresh-meat item">
     <div class="featured__item" style="background-color:#f5f5f5;">
         <div class="featured__item__pic set-bg">
             <img src="<?= Url::to(['/upload/' . $model->img]) ?>" alt="">

@@ -186,7 +186,7 @@ use yii\helpers\Url;
                             <?php foreach ($produk as $p) {
                                 $promo = app\models\Promo::find()->where(['products_id' => $p->id])->andWhere(['>=', 'date_end', date('Y-m-d')])->one();
                             ?>
-                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <div class="col-lg-3 col-md-6 col-sm-6">
                                     <div class="product__item" style="background-color:#f5f5f5;">
                                         <div class="product__item__pic set-bg" data-setbg="">
                                             <img src="<?= Url::to(['/upload/' . $p->img]) ?>" alt="">

@@ -71,14 +71,6 @@
     }
 </script>
 
-<!-- Menambahkan harga saat promo habis -->
-<script>
-    function updateValue(id) {
-        let harga = $('#promohabis-' + id).val();
-        alert(harga);
-    }
-</script>
-
 <!-- Alert stok habis -->
 <script>
     $(document).ready(function() {
@@ -210,7 +202,7 @@
     })
 </script>
 
-<!-- Search Data Memalui data di html -->
+<!-- Search Data Melalui data di html -->
 <!-- <script>
     $(document).ready(function() {
         $('#search').keyup(function() {
@@ -275,3 +267,19 @@
         $('.form-select').select2();
     });
 </script> -->
+
+<!-- Slider Otomatis -->
+<?php
+$bannerCount = app\models\Banner::find()->where(['>=', 'date_end', date('Y-m-d')])->count();
+?>
+<script>
+    var counter = 1;
+    var count = parseInt(<?= $bannerCount ?>);
+    setInterval(function() {
+        document.getElementById('radio' + counter).checked = true;
+        counter++;
+        if (counter > count) {
+            counter = 1;
+        }
+    }, 4000);
+</script>

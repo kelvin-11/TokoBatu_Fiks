@@ -198,36 +198,12 @@ section .color:nth-child(3) {
     margin-bottom: 20px;
     font-weight: 600;
     padding: 10px 20px;
-    /* background-image: linear-gradient(to right, #c3cfe2 0%, #f5f7fa 51%, #c3cfe2 100%); */
+    background-image: linear-gradient(to right, #c3cfe2 0%, #f5f7fa 51%, #c3cfe2 100%);
     background-size: 200% auto;
     z-index: 2;
     display: inline-block;
     transition: all 400ms linear;
-    /* color: #262627; */
-    position: relative;
-    color: #fff;
-    text-transform: uppercase;
-    background-image: linear-gradient(90deg, #0162c8, #55e7fc);
-}
-
-span {
-    position: absolute;
-    background: #fff;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    border-radius: 50%;
-    animation: animateButton 1s linear infinite;
-}
-
-@keyframes animateButton {
-    0% {
-        width: 0px;
-        height: 0px;
-    }
-    100% {
-        width: 50px;
-        height: 50px;
-    }
+    color: #262627;
 }
 
 .forget {

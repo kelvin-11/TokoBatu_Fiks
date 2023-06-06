@@ -18,7 +18,7 @@ use yii\helpers\Url;
         top: 20px;
     }
 </style>
-<div class="col-lg-4 col-md-6 col-sm-6 item">
+<div class="col-lg-4 col-md-6 col-sm-6">
     <div class="product__item" style="background-color:#f5f5f5;">
         <div class="product__item__pic set-bg" data-setbg="">
             <img src="<?= Url::to(['/upload/' . $model->img]) ?>" alt="">

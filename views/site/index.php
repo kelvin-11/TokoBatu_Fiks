@@ -35,35 +35,54 @@
                             </div>
                         </div>
                     </div> -->
-                    <div id="carouselExampleIndicators" class="carousel slide">
-                        <div class="carousel-inner">
-                            <?php foreach ($banners as $key => $banner) { ?>
-                                <div class="carousel-item <?= ($key == 0) ? "active" : "" ?>">
-                                    <img src="<?= yii\helpers\Url::to(['/upload/' . $banner->image]) ?>" alt="" style="width: 150vh;height:80vh">
+
+                    <div class="slider">
+                        <div class="slides">
+
+                            <?php
+                            $no = 1;
+                            foreach ($banners as $key => $banner) { ?>
+                                <input type="radio" name="radio-btn" id="radio<?= $no++ ?>">
+                            <?php } ?>
+
+                            <?php
+                            $no = 1;
+                            foreach ($banners as $key => $banner) { ?>
+                                <div class="slide <?= ($key == 0) ? "first" : "" ?>">
+                                    <img src="<?= yii\helpers\Url::to(['/upload/' . $banner->image]) ?>" alt="">
                                 </div>
                             <?php } ?>
+
+                            <div class="navigation-auto">
+                                <?php
+                                $no = 1;
+                                foreach ($banners as $key => $banner) { ?>
+                                    <div class="auto-btn<?= $no++ ?>"></div>
+                                <?php } ?>
+                            </div>
                         </div>
-                        <?php if ($bannerCount != 1) { ?>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            </button>
-                        <?php } ?>
+
+                        <div class="navigation-manual">
+                            <?php
+                            $no = 1;
+                            foreach ($banners as $key => $banner) { ?>
+                                <label for="radio<?= $no++ ?>" class="manual-btn"></label>
+                            <?php } ?>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </section>
-    
+
     <!-- Categories Section Begin -->
     <section class="categories">
         <div class="container">
             <div class="row">
                 <div class="categories__slider owl-carousel">
                     <?php foreach ($categories as $category) : ?>
-                        <div class="col-lg-3">
+                        <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="categories__item set-bg" data-setbg="<?= \Yii::$app->request->BaseUrl . "/upload/" . $category->img ?>" style="background-color:#f5f5f5;">
                                 <h5><a href="<?= \Yii::$app->request->baseUrl . "/site/shop?category=" . $category->name ?>"><?= $category->name ?></a></h5>
                             </div>
@@ -104,23 +123,4 @@
         </div>
     </section>
     <!-- Featured Section End -->
-
-    <!-- Banner Begin -->
-    <!-- <div class="banner mb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6">
-                    <div class="banner__pic">
-                        <img src="<?= Yii::$app->request->baseUrl . "/ogani-master/img/banner/banner-1.jpg" ?>" alt="">
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-6">
-                    <div class="banner__pic">
-                        <img src="<?= Yii::$app->request->baseUrl . "/ogani-master/img/banner/banner-2.jpg" ?>" alt="">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <!-- Banner End -->
 </div>
