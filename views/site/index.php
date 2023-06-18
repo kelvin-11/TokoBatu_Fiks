@@ -8,7 +8,7 @@
                             <i class="fa fa-bars"></i>
                             <span>KATEGORI</span>
                         </div>
-                        <ul>
+                        <ul style="height: 405px; overflow: auto">
                             <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop/" ?>">Semua Kategori</a></li>
                             <?php foreach ($categories as $category) : ?>
                                 <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop?category=" . $category->name ?>"><?= $category->name ?></a></li>

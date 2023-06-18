@@ -9,17 +9,23 @@ use yii\helpers\Url;
             <div class="col-lg-3 col-md-5">
                 <div class="sidebar">
                     <div class="sidebar__item" id="select-category">
-                        <h4>KATEGORI</h4>
-                        <ul>
-                            <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop/" ?>">Semua Kategori</a></li>
-                            <?php foreach ($categories as $category) { ?>
-                                <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop?category=" . $category->name ?>" <?php
-                                                                                                                                if (isset($_GET['category']) == $category->name) {
-                                                                                                                                    echo "selected";
-                                                                                                                                }
-                                                                                                                                ?>><?= $category->name ?></a></li>
-                            <?php } ?>
-                        </ul>
+                        <div class="hero__categories">
+                            <div class="hero__categories__all">
+                                <i class="fa fa-bars"></i>
+                                <span>KATEGORI</span>
+                            </div>
+
+                            <ul style="height: 450px; overflow: auto">
+                                <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop/" ?>">Semua Kategori</a></li>
+                                <?php foreach ($categories as $category) { ?>
+                                    <li><a href="<?= \Yii::$app->request->baseUrl . "/site/shop?category=" . rawurlencode($category->name) ?>" <?php
+                                                                                                                                                if (isset($_GET['category']) == $category->name) {
+                                                                                                                                                    echo "selected";
+                                                                                                                                                }
+                                                                                                                                                ?>><?= $category->name ?></a></li>
+                                <?php } ?>
+                            </ul>
+                        </div>
                     </div>
                     <div class="sidebar__item">
                         <div class="latest-product__text">
