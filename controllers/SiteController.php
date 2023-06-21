@@ -184,6 +184,8 @@ class SiteController extends Controller
             $pesanan->kode_unik = random_int(0, 99999);
             $pesanan->total_harga = 0;
             $pesanan->status_pemesanan = 'pending';
+            $pesanan->created_at = date('Y:m:d H:i:s');
+            $pesanan->updated_at = date('Y:m:d H:i:s');
             if ($pesanan->validate()) {
                 $pesanan->save();
             } else {

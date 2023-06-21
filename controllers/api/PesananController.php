@@ -108,8 +108,8 @@ class PesananController extends \yii\rest\ActiveController
             $pesanan->kode_unik = random_int(0, 99999);
             $pesanan->total_harga = 0;
             $pesanan->status_pemesanan = 'pending';
-            $pesanan->created_at = date('y:m:d H:i:s');
-            $pesanan->updated_at = date('y:m:d H:i:s');
+            $pesanan->created_at = date('Y:m:d H:i:s');
+            $pesanan->updated_at = date('Y:m:d H:i:s');
             if (!$pesanan->validate()) {
                 //roleBack agar tidak jadi di save
                 return [
